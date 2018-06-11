@@ -8,7 +8,9 @@ Welcome to gps-helper's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Modules:
+
+   smoothing
 
 
 

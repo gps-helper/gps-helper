@@ -1,4 +1,7 @@
 class RecursiveAverage:
+    """
+    Recursive average filter implementation.
+    """
 
     def __init__(self):
         self.k = 0.0
@@ -6,9 +9,10 @@ class RecursiveAverage:
 
     def next_sample(self, x):
         """
+        Process the next data sample.
 
         :param x: Next data sample to compute average
-        :return:
+        :return: float
         """
         self.k += 1.0
         self.x_k = ((self.k - 1.) / self.k) * self.x_k + x / self.k
@@ -29,6 +33,7 @@ class MovingAverageFilter:
 
     def next_sample(self, x):
         """
+        Process the next sample.
 
         :param x: Next data sample to compute average
         :return: float
@@ -54,8 +59,9 @@ class LowPassFilter:
     def next_sample(self, x):
         """
         Process the next sample.
-        :param x:
-        :return:
+
+        :param x: Next sample value.
+        :return: float
         """
         xlpf = self.alpha * self.prev + (1 - self.alpha) * x
         self.prev = xlpf
