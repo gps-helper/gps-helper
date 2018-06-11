@@ -1,4 +1,4 @@
-class AverageFilter:
+class RecursiveAverageFilter:
 
     def __init__(self):
         self.k = 0.0
@@ -37,3 +37,27 @@ class MovingAverageFilter:
         self.x_k[1:] = self.x_k[:-1]
         self.x_k[0] = x_k
         return x_k
+
+
+class LowPassFilter:
+    """
+    Low pass filter implementation.
+    """
+
+    def __init__(self, alpha):
+        """
+        Provide the alpha weighting value to initialize.
+        :param alpha: Weighting value
+        """
+        self.alpha = alpha
+        self.prev = 0
+
+    def next_sample(self, x):
+        """
+        Process the next sample.
+        :param x:
+        :return:
+        """
+        xlpf = self.alpha * self.prev + (1 - self.alpha) * x
+        self.prev = xlpf
+        return xlpf
