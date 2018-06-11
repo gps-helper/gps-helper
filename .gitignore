@@ -2,3 +2,4 @@
 .tox/*
 *.egg-info/*
 .idea/*
+docs/build/*
