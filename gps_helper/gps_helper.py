@@ -1,10 +1,10 @@
 import os
 import numpy as np
 from sgp4.io import twoline2rv
-from sgp4.io import days2mdhms
 from sgp4.io import jday
 from sgp4.earth_gravity import wgs84
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class GPSDataSource(object):
@@ -556,7 +556,6 @@ def sv_user_traj_3d(gps_ds, sv_pos, user_pos, ele=20, azim=20):
     # Mark Wickert January 2018
 
     fig = plt.figure(figsize=(7, 7))
-    # ax = fig.gca(projection='3d')
     ax = fig.add_subplot(111, projection='3d')
     ax.set_aspect('equal')
     u = np.linspace(0, 2 * np.pi, 100)
