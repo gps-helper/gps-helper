@@ -21,7 +21,7 @@ def read(fname):
 requirements = read(fpath('requirements.txt'))
 
 setup(name='gps_helper',
-      version='0.0.2',
+      version='0.0.3',
       description='GPS helper module',
       long_description=read_md(fpath('README.md')),
       author='Chiranth Siddappa',
