@@ -10,6 +10,7 @@ Welcome to gps-helper's documentation!
    :maxdepth: 2
    :caption: Modules:
 
+   gps_helper
    smoothing
 
 
