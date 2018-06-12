@@ -28,4 +28,27 @@ class TestSmoothing(GPSTest):
         npt.assert_almost_equal(yravg[-5:], y_test)
 
     def test_moving_average_filter_10(self):
+        y_test = np.array([4.07421968, 4.17726944, 4.22942197, 4.33335506, 4.37199144])
         ma = sm.MovingAverageFilter(10)
+        Npts = 100
+        n = np.arange(0, 100)
+        x = 5 * np.cos(2 * np.pi * n / 100)
+        v = 0.3 * np.random.randn(Npts)
+        z = x + v
+        y10 = np.zeros_like(z)
+        for k, z_k in enumerate(z):
+            y10[k] = ma.next_sample(z_k)
+        npt.assert_almost_equal(y10[-5:], y_test)
+
+    def test_moving_average_filter_20(self):
+        y_test = np.array([2.87004371, 3.07534742, 3.26104718, 3.41619168, 3.62503732])
+        ma = sm.MovingAverageFilter(20)
+        Npts = 100
+        n = np.arange(0, 100)
+        x = 5 * np.cos(2 * np.pi * n / 100)
+        v = 0.3 * np.random.randn(Npts)
+        z = x + v
+        y20 = np.zeros_like(z)
+        for k, z_k in enumerate(z):
+            y20[k] = ma.next_sample(z_k)
+        npt.assert_almost_equal(y20[-5:], y_test)
