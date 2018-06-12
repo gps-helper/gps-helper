@@ -1,5 +1,6 @@
 from setuptools import setup
 import os
+import codecs
 
 try:
     from pypandoc import convert
@@ -13,6 +14,12 @@ def fpath(name):
     return os.path.join(os.path.dirname(__file__), name)
 
 
+def read(fname):
+    return codecs.open(fpath(fname), encoding='utf-8').read()
+
+
+requirements = read(fpath('requirements.txt'))
+
 setup(name='gps_helper',
       version='0.0.1',
       description='GPS helper module',
@@ -23,7 +30,7 @@ setup(name='gps_helper',
       package_dir={'gps_helper': 'gps_helper'},
       packages=['gps_helper'],
       license='BSD',
-      install_requires=[],
+      install_requires=requirements.split(),
       test_suite='nose.collector',
       tests_require=['nose', 'tox', 'numpy'],
       )
