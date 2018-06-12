@@ -25,5 +25,5 @@ setup(name='gps_helper',
       license='BSD',
       install_requires=[],
       test_suite='nose.collector',
-      tests_require=['nose', 'tox'],
+      tests_require=['nose', 'tox', 'numpy'],
       )
