@@ -7,6 +7,13 @@ Welcome to gps-helper's documentation!
 ======================================
 
 .. toctree::
+   :titlesonly:
+   :caption: Jupyter Notebook Examples
+
+   ../nb_examples/Kalman_Basics_practice.ipynb
+   ../nb_examples/Kalman_GPS_practice.ipynb
+
+.. toctree::
    :maxdepth: 2
    :caption: Modules:
 
