@@ -42,7 +42,8 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-              'nbsphinx']
+              'nbsphinx',
+              'numpydoc']
 
 exclude_patterns = ['_build', '*.ipynb_checkpoints']
 
