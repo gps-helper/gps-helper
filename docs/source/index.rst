@@ -8,10 +8,8 @@ Welcome to gps-helper's documentation!
 
 .. toctree::
    :titlesonly:
-   :caption: Jupyter Notebook Examples
 
-   ../nb_examples/Kalman_Basics_practice.ipynb
-   ../nb_examples/Kalman_GPS_practice.ipynb
+   nb_examples
 
 .. toctree::
    :maxdepth: 2

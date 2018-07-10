@@ -5,3 +5,17 @@
 [![travis](https://travis-ci.org/chiranthsiddappa/gps_helper.svg?branch=master)](https://travis-ci.org/chiranthsiddappa/gps_helper)
 
 Tools and examples for GPS
+
+## Documentation
+
+Documentation is hosted on [readthedocs](https://gps-helper.readthedocs.io). Interactive 
+[Jupyter notebooks](https://gps-helper.readthedocs.io/en/latest/nb_examples.html) are viewable and also included this 
+repository.
+
+## Installation
+
+This package is available for download through [pypi](https://pypi.org/project/gps-helper/).
+
+```commandline
+pip install gps-helper
+```
