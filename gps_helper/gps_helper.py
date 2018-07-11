@@ -645,7 +645,12 @@ def sv_user_traj_3d_interactive(gps_ds, sv_pos, user_pos, ele=10., azim=20.):
     mlab.plot3d(user_pos[:, 0] / radius, user_pos[:, 1] / radius, user_pos[:, 2] / radius,
                 color=(1, 1, 1),
                 opacity=0.5, tube_radius=None)
-    # TODO: Add a label for the user trajectory here
+    xml = len(user_pos[:, 0]) / 2
+    yml = len(user_pos[:, 1]) / 2
+    zml = len(user_pos[:, 2]) / 2
+    xm, ym, zm = user_pos[int(xml), 0] / radius, user_pos[int(yml), 1] / radius, user_pos[int(zml), 2] / radius
+    label = mlab.text(xm, ym, "User", z=zm, width=0.077)
+    label.property.shadow = True
     ###############################################################################
     # Display a semi-transparent sphere, for the surface of the Earth
 
