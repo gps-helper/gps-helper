@@ -12,7 +12,6 @@ def read(fname):
 
 
 requirements = read(fpath('requirements.txt'))
-plotting = read(fpath('plotting.txt'))
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -28,7 +27,6 @@ setup(name='gps_helper',
       package_dir={'gps_helper': 'gps_helper'},
       packages=['gps_helper'],
       license='BSD',
-      setup_requires=['cython'],
       install_requires=requirements.split(),
       test_suite='nose.collector',
       tests_require=['nose', 'tox', 'numpy'],
