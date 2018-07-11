@@ -17,5 +17,14 @@ repository.
 This package is available for download through [pypi](https://pypi.org/project/gps-helper/).
 
 ```commandline
-pip install gps-helper
+$ pip install gps-helper
 ```
+
+To use the plotting functionality, there are extra requirements.
+
+```commandline
+$ pip install gps-helper[plotting]
+```
+
+For [matplotlib](https://matplotlib.org/users/installing.html) and [mayavi](https://docs.enthought.com/mayavi/mayavi/installation.html), 
+you will need to have backends installed to view the figures.
