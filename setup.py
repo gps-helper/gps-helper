@@ -30,9 +30,6 @@ setup(name='gps_helper',
       license='BSD',
       setup_requires=['cython'],
       install_requires=requirements.split(),
-      extras_require={
-          'plotting': plotting,
-      },
       test_suite='nose.collector',
       tests_require=['nose', 'tox', 'numpy'],
       )
