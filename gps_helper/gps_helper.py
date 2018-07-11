@@ -5,6 +5,10 @@ from sgp4.io import jday
 from sgp4.earth_gravity import wgs84
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from mayavi import mlab
+from mayavi.sources.builtin_surface import BuiltinSurface
+
+radius = 6371669.9
 
 
 class GPSDataSource(object):
@@ -535,7 +539,7 @@ def enu2ecef(r_enu, r_ref, phi_ref, lam_ref):
     return r_ecef
 
 
-def sv_user_traj_3d(gps_ds, sv_pos, user_pos, ele=20, azim=20):
+def sv_user_traj_3d(gps_ds, sv_pos, user_pos, ele=10, azim=20):
     """[summary]
 
     Parameters:
@@ -560,11 +564,9 @@ def sv_user_traj_3d(gps_ds, sv_pos, user_pos, ele=20, azim=20):
     ax.set_aspect('equal')
     u = np.linspace(0, 2 * np.pi, 100)
     v = np.linspace(0, np.pi, 100)
-    radius = 6371669.9
     x = radius * np.outer(np.cos(u), np.sin(v))
     y = radius * np.outer(np.sin(u), np.sin(v))
     z = radius * np.outer(np.ones(np.size(u)), np.cos(v))
-    elev = 10.0
     rot = 80.0 / 180 * np.pi
     ax.plot_surface(x, y, z, rstride=4, cstride=4, color='b',
                     linewidth=0, alpha=0.2)
@@ -575,8 +577,8 @@ def sv_user_traj_3d(gps_ds, sv_pos, user_pos, ele=20, azim=20):
     ax.plot(user_pos[:, 0], user_pos[:, 1], user_pos[:, 2],
             'r', linewidth=3.0)
     # calculate vectors for "vertical" circle
-    a = np.array([-np.sin(elev / 180 * np.pi),
-                  0, np.cos(elev / 180 * np.pi)])
+    a = np.array([-np.sin(ele / 180 * np.pi),
+                  0, np.cos(ele / 180 * np.pi)])
     b = np.array([0, 1, 0])
     b = b * np.cos(rot) + np.cross(a, b) * np.sin(rot) + \
         a * np.dot(a, b) * (1 - np.cos(rot))
@@ -606,6 +608,81 @@ def sv_user_traj_3d(gps_ds, sv_pos, user_pos, ele=20, azim=20):
     ax.set_zlabel(r'$z$ ECEF (m)')
     ax.set_title(r'SV and USER Trajectories')
     # axis('scaled')
-    ax.view_init(elev=elev, azim=azim)
+    ax.view_init(elev=ele, azim=azim)
 
     print('Duration: %2.2f min' % (gps_ds.Ts * gps_ds.N_sim_steps / 60,))
+
+
+def sv_user_traj_3d_interactive(gps_ds, sv_pos, user_pos, ele=10., azim=20.):
+    """
+    This method will provide an interactive 3d model plotted using mayavi to show all trajectories.
+    :param gps_ds:
+    :param sv_pos:
+    :param user_pos:
+    :return:
+    """
+    mlab.figure(1, bgcolor=(0.48, 0.48, 0.48), fgcolor=(0, 0, 0),
+                size=(400, 400))
+    mlab.clf()
+    ##########################################################################
+    # Display continents outline, using the VTK Builtin surface 'Earth'
+    continents_src = BuiltinSurface(source='earth', name='Continents')
+    # The on_ratio of the Earth source controls the level of detail of the
+    # continents outline.
+    continents_src.data_source.on_ratio = 1
+    continents = mlab.pipeline.surface(continents_src, color=(0, 0, 0))
+
+    for svn in range(0, len(sv_pos)):
+        mlab.plot3d(sv_pos[svn, 0, :] / radius, sv_pos[svn, 1, :] / radius, sv_pos[svn, 2, :] / radius,
+                    color=(1, 1, 0.5),
+                    opacity=0.5, tube_radius=None)
+        xml = len(sv_pos[svn, 0, :]) / 2
+        yml = len(sv_pos[svn, 1, :]) / 2
+        zml = len(sv_pos[svn, 2, :]) / 2
+        xm, ym, zm = sv_pos[svn, 0, int(xml)] / radius, sv_pos[svn, 1, int(yml)] / radius, sv_pos[svn, 2, int(zml)] / radius
+        label = mlab.text(xm, ym, gps_ds.Rx_sv_list[svn], z=zm, width=0.0155 * len(gps_ds.Rx_sv_list[svn]))
+        label.property.shadow = True
+    mlab.plot3d(user_pos[:, 0] / radius, user_pos[:, 1] / radius, user_pos[:, 2] / radius,
+                color=(1, 1, 1),
+                opacity=0.5, tube_radius=None)
+    xml = len(user_pos[:, 0]) / 2
+    yml = len(user_pos[:, 1]) / 2
+    zml = len(user_pos[:, 2]) / 2
+    xm, ym, zm = user_pos[int(xml), 0] / radius, user_pos[int(yml), 1] / radius, user_pos[int(zml), 2] / radius
+    label = mlab.text(xm, ym, "User", z=zm, width=0.077)
+    label.property.shadow = True
+    ###############################################################################
+    # Display a semi-transparent sphere, for the surface of the Earth
+
+    # We use a sphere Glyph, throught the points3d mlab function, rather than
+    # building the mesh ourselves, because it gives a better transparent
+    # rendering.
+    ocean_blue = (0.4, 0.5, 1.0)
+    sphere = mlab.points3d(0, 0, 0, scale_mode='none',
+                           scale_factor=2,
+                           # color=(0.67, 0.77, 0.93),
+                           color=ocean_blue,
+                           resolution=50,
+                           opacity=.85,
+                           name='Earth')
+    #
+    # These parameters, as well as the color, where tweaked through the GUI,
+    # with the record mode to produce lines of code usable in a script.
+    sphere.actor.property.specular = 0.45
+    sphere.actor.property.specular_power = 5
+    # Backface culling is necessary for more a beautiful transparent
+    # rendering.
+    sphere.actor.property.backface_culling = True
+
+    # Plot the equator and the tropiques
+    theta = np.linspace(0, 2 * np.pi, 100)
+    for angle in (- np.pi / 6, 0, np.pi / 6):
+        x = np.cos(theta) * np.cos(angle)
+        y = np.sin(theta) * np.cos(angle)
+        z = np.ones_like(theta) * np.sin(angle)
+        print(x)
+        mlab.plot3d(x, y, z, color=(1, 1, 1),
+                    opacity=0.2, tube_radius=None)
+
+    mlab.view(azim, ele)
+    mlab.show()
