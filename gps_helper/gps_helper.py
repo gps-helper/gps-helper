@@ -636,7 +636,12 @@ def sv_user_traj_3d_interactive(gps_ds, sv_pos, user_pos, ele=10., azim=20.):
         mlab.plot3d(sv_pos[svn, 0, :] / radius, sv_pos[svn, 1, :] / radius, sv_pos[svn, 2, :] / radius,
                     color=(1, 1, 0.5),
                     opacity=0.5, tube_radius=None)
-        # TODO: Add a label for the trajectories here
+        xml = len(sv_pos[svn, 0, :]) / 2
+        yml = len(sv_pos[svn, 1, :]) / 2
+        zml = len(sv_pos[svn, 2, :]) / 2
+        xm, ym, zm = sv_pos[svn, 0, int(xml)] / radius, sv_pos[svn, 1, int(yml)] / radius, sv_pos[svn, 2, int(zml)] / radius
+        label = mlab.text(xm, ym, gps_ds.Rx_sv_list[svn], z=zm, width=0.0155 * len(gps_ds.Rx_sv_list[svn]))
+        label.property.shadow = True
     mlab.plot3d(user_pos[:, 0] / radius, user_pos[:, 1] / radius, user_pos[:, 2] / radius,
                 color=(1, 1, 1),
                 opacity=0.5, tube_radius=None)
