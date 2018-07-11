@@ -43,7 +43,8 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
               'nbsphinx',
-              'numpydoc']
+              'numpydoc',
+              'm2r']
 
 exclude_patterns = ['_build', '*.ipynb_checkpoints']
 
@@ -154,7 +155,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'gps-helper.tex', 'gps-helper Documentation',
-     'Chiranth Siddappa', 'manual'),
+     u'Chiranth Siddappa, Mark Wickert', 'manual'),
 ]
 
 

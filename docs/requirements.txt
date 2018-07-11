@@ -3,3 +3,4 @@ numpydoc
 nbsphinx
 ipykernel
 matplotlib
+m2r

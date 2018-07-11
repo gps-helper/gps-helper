@@ -6,6 +6,8 @@
 Welcome to gps-helper's documentation!
 ======================================
 
+.. mdinclude:: ../../README.md
+
 .. toctree::
    :titlesonly:
 
