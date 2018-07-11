@@ -6,6 +6,13 @@
 Welcome to gps-helper's documentation!
 ======================================
 
+.. mdinclude:: ../../README.md
+
+.. toctree::
+   :titlesonly:
+
+   nb_examples
+
 .. toctree::
    :maxdepth: 2
    :caption: Modules:

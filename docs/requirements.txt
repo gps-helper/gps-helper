@@ -1,4 +1,6 @@
 sphinx
 numpydoc
+nbsphinx
+ipykernel
 matplotlib
-mayavi
+m2r
