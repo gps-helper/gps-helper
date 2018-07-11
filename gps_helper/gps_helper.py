@@ -3,10 +3,16 @@ import numpy as np
 from sgp4.io import twoline2rv
 from sgp4.io import jday
 from sgp4.earth_gravity import wgs84
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from mayavi import mlab
-from mayavi.sources.builtin_surface import BuiltinSurface
+try:
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+except ImportError:
+    UserWarning("matplotlib not imported due to import error")
+try:
+    from mayavi import mlab
+    from mayavi.sources.builtin_surface import BuiltinSurface
+except ImportError:
+    UserWarning("mayabi not imported due to import error")
 
 radius = 6371669.9
 

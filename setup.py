@@ -12,6 +12,7 @@ def read(fname):
 
 
 requirements = read(fpath('requirements.txt'))
+plotting = read(fpath('plotting.txt'))
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -30,4 +31,7 @@ setup(name='gps_helper',
       install_requires=requirements.split(),
       test_suite='nose.collector',
       tests_require=['nose', 'tox', 'numpy'],
+      extras_require={
+            'plotting': plotting.split()
+      }
       )
