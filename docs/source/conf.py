@@ -111,6 +111,10 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+html_logo = 'logo.png'
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
