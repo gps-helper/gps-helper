@@ -1,3 +1,4 @@
 include README.md
 include requirements.txt
 include plotting.txt
+include logo_hi.png
