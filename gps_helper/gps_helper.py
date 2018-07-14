@@ -77,7 +77,7 @@ class GPSDataSource(object):
         Place a text file of Celestrak GPS TLEs into a dictionary with
         keys of the form 'PRN xx' for the SV of interest
 
-        :param tle: Two line element set as a file.
+        :param tle: Path to two line element set file.
         :return: dict
         """
         GPS_sv_dict = {}
