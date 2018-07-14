@@ -2,6 +2,7 @@ from .test_helper import GPSTest
 from .. import gps_helper as gh
 import os
 import numpy as np
+from numpy import testing as npt
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 tle_path = os.path.abspath(os.path.join(dir_path, '..', '..', 'docs', 'source', 'nb_examples', 'GPS_tle_1_10_2018.txt'))
@@ -17,6 +18,11 @@ class TestGPSHelper(GPSTest):
                                         ('PRN 32', 'PRN 21', 'PRN 10', 'PRN 18'),
                                     ref_lla=(38.8454167, -104.7215556, 1903.0),
                                     ts=1)
+
+    def test_GPSDataSource_ll2ecef(self):
+        ecef_test = [-1264406.32825878, -4812253.55054197,  3980159.53945133]
+        ecef = self.gps_ds.llh2ecef(self.gps_ds.ref_lla)
+        npt.assert_almost_equal(ecef, ecef_test)
 
     def test_GPSDataSource_init(self):
         """
