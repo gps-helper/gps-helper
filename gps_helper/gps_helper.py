@@ -141,7 +141,7 @@ class GPSDataSource(object):
         Mark Wickert January 2018
         """
         # Miles per time step Ts
-        Dmile = vmph * self.Ts / 3600
+        Dmile = vmph * self.Ts / 3600.
         Nsegs = len(route_list)
         Steps = []
         Steps_Total = 0
