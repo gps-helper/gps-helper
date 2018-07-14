@@ -41,6 +41,20 @@ class TestGPSHelper(GPSTest):
                  '2 41328  54.8561 211.7917 0016757 212.5950 147.3462  2.00569342 14112'
         self.assertEqual(self.gps_ds.GPS_sv_dict['PRN 32'], prn_32)
 
+    def test_GPSDataSource_user_traj_gen_u_enu(self):
+        user_enu_test = [[0.001388888888888889, 0.0],
+                         [-3.0357660829594124e-18, 0.09999999999999992]]
+        rl1 = rl1 = [('e', .2), ('n', .4), ('e', -0.1), ('n', -0.2), ('e', -0.1), ('n', -0.1)]
+        user_vel = 5 # mph
+        u_pos_enu, u_pos_ecf, sv_pos, sv_vel = self.gps_ds.user_traj_gen(rl1, user_vel,
+                                                                         yr2=18,  # the 2k year, so 2018 is 18
+                                                                         mon=1,
+                                                                         day=15,
+                                                                         hr=8 + 7,
+                                                                         minute=45)  # Jan 18, 2018, 8:45 AM
+        npt.assert_almost_equal(user_enu_test,[[u_pos_enu[0,0], u_pos_enu[0,1]],
+                                               (u_pos_enu[-1,0], u_pos_enu[-1,1])])
+
     def test_GPSDataSource_user_traj_gen_u_ecf(self):
         user_ecef_test = [[-1264404.16643545, -4812254.11855508,  3980159.53945133],
                      [-1264402.00461211, -4812254.68656819,  3980159.53945133],
