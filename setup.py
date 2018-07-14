@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 import codecs
-
+from gps_helper import __version__
 
 def fpath(name):
     return os.path.join(os.path.dirname(__file__), name)
@@ -18,7 +18,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name='gps_helper',
-      version='0.0.6',
+      version=__version__.__version__,
       description='GPS helper module',
       long_description=long_description,
       long_description_content_type="text/markdown",
