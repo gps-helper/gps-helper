@@ -5,7 +5,7 @@ python:
     - "3.4"
     - "3.5"
     - "3.6"
-install: pip install tox-travis coveralls coverage
+install: pip install tox-travis coverage
 before_script: # configure a headless display to test plot generation
 - "export DISPLAY=:99.0"
 - "sh -e /etc/init.d/xvfb start"
@@ -13,5 +13,6 @@ before_script: # configure a headless display to test plot generation
 script:
 - tox
 after_success:
+- pip install coveralls
 - coverage run --source=gps_helper setup.py test
 - coveralls
