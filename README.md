@@ -3,6 +3,7 @@
 [![pypi](https://img.shields.io/pypi/v/gps_helper.svg)](https://pypi.python.org/pypi/gps_helper)
 [![Docs](https://readthedocs.org/projects/gps-helper/badge/?version=latest)](http://gps-helper.readthedocs.io/en/latest/?badge=latest)
 [![travis](https://travis-ci.com/gps-helper/gps-helper.svg?branch=master)](https://travis-ci.com/gps-helper/gps-helper)
+[![Coverage Status](https://coveralls.io/repos/github/gps-helper/gps-helper/badge.svg?branch=master)](https://coveralls.io/github/gps-helper/gps-helper?branch=master)
 
 Tools and examples for GPS
 
