@@ -44,7 +44,7 @@ class TestGPSHelper(GPSTest):
     def test_GPSDataSource_user_traj_gen_u_enu(self):
         user_enu_test = [[0.001388888888888889, 0.0],
                          [-3.0357660829594124e-18, 0.09999999999999992]]
-        rl1 = rl1 = [('e', .2), ('n', .4), ('e', -0.1), ('n', -0.2), ('e', -0.1), ('n', -0.1)]
+        rl1 = [('e', .2), ('n', .4), ('e', -0.1), ('n', -0.2), ('e', -0.1), ('n', -0.1)]
         user_vel = 5 # mph
         u_pos_enu, u_pos_ecf, sv_pos, sv_vel = self.gps_ds.user_traj_gen(rl1, user_vel,
                                                                          yr2=18,  # the 2k year, so 2018 is 18
@@ -54,6 +54,27 @@ class TestGPSHelper(GPSTest):
                                                                          minute=45)  # Jan 18, 2018, 8:45 AM
         npt.assert_almost_equal(user_enu_test,[[u_pos_enu[0,0], u_pos_enu[0,1]],
                                                (u_pos_enu[-1,0], u_pos_enu[-1,1])])
+
+    def test_GPSDataSource_create_sv_data_set(self):
+        sv_pos_test = [[-15192369.15003934, -15191420.4031589],
+                       [-20303664.44101918, -20303211.6759019],
+                       [8037007.78092837, 8039945.61080747]]
+        sv_vel_test = [[948.5821469, 948.8890999],
+                       [452.67846457, 452.86207827],
+                       [2937.90625514, 2937.73600042]]
+        rl1 = [('e', .2), ('n', .4), ('e', -0.1), ('n', -0.2), ('e', -0.1), ('n', -0.1)]
+        vmph = 5
+        n_segs = len(rl1)
+        steps = []
+        steps_total = 0
+        for k in range(n_segs):
+            steps.append(int(np.floor((abs(rl1[k][1] / vmph * 3600)))))
+            steps_total += steps[k]
+        self.gps_ds.t_delta = np.arange(0, steps_total) * self.gps_ds.Ts
+        self.gps_ds.N_sim_steps = steps_total
+        sv_pos, sv_vel = self.gps_ds.create_sv_data_set(18, 1, 15, 8+7, 45)
+        npt.assert_almost_equal(sv_pos_test, sv_pos[0, :, :2])
+        npt.assert_almost_equal(sv_vel_test, sv_vel[0, :, :2])
 
     def test_GPSDataSource_user_traj_gen_u_ecf(self):
         user_ecef_test = [[-1264404.16643545, -4812254.11855508,  3980159.53945133],
