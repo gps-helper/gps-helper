@@ -77,7 +77,7 @@ class GPSDataSource(object):
         Place a text file of Celestrak GPS TLEs into a dictionary with
         keys of the form 'PRN xx' for the SV of interest
 
-        :param tle: Two line element set as a file.
+        :param tle: Path to two line element set file.
         :return: dict
         """
         GPS_sv_dict = {}
@@ -141,7 +141,7 @@ class GPSDataSource(object):
         Mark Wickert January 2018
         """
         # Miles per time step Ts
-        Dmile = vmph * self.Ts / 3600
+        Dmile = vmph * self.Ts / 3600.
         Nsegs = len(route_list)
         Steps = []
         Steps_Total = 0
@@ -340,30 +340,6 @@ class GPSDataSource(object):
         gst = temp
         return gst
 
-    def earth_model(self):
-        """
-        Define the constants from the WGS-84 ellipsoidal Earth model.
-
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        a : semi-major axis of the Earth ellipsoid model
-        f : flattening
-
-        Notes
-        -----
-        The World Geodetic System (WGS) is a standard for use in cartography, geodesy, and navigation.
-        The latest revision is WGS-84.
-
-        """
-        a = 6378137.0  # meters
-        f = 1.0 / 298.257223563
-        return a, f
-
     def llh2ecef(self, llh):
         """
         Convert lat,lon,hgt geographic coords to X,Y,Z Earth Centered Earth
@@ -399,7 +375,7 @@ class GPSDataSource(object):
 
         ecf = np.zeros(3)
         " Set up WGS-84 constants."
-        a, f = self.earth_model()
+        a, f = earth_model()
 
         " Store some commonly used values."
         slat = np.sin(lat)
@@ -499,6 +475,31 @@ class GPSDataSource(object):
         minute = int(temp)
         sec = (temp - minute) * 60.0
         return mon, day, hr, minute, sec
+
+
+def earth_model():
+    """
+    Define the constants from the WGS-84 ellipsoidal Earth model.
+
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    a : semi-major axis of the Earth ellipsoid model
+    f : flattening
+
+    Notes
+    -----
+    The World Geodetic System (WGS) is a standard for use in cartography, geodesy, and navigation.
+    The latest revision is WGS-84.
+
+    """
+    a = 6378137.0  # meters
+    f = 1.0 / 298.257223563
+    return a, f
 
 
 def ecef2enu(r_ecef, r_ref, phi_ref, lam_ref):
