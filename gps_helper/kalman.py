@@ -1,11 +1,12 @@
 import numpy as np
 from numpy.linalg import inv
 
+
 class SimpleKalman(object):
     """
     Kim Chapter 10.2 Battery voltage estimation with measurement noise
 
-    Python 3.x is assumed so the operator @ can be used for matrix multiply
+    Python > 3.5 is assumed so the operator @ can be used for matrix multiply
 
     Mark Wickert February 2018
     """
@@ -22,6 +23,7 @@ class SimpleKalman(object):
         # Measurement model covariance
         self.R = 4
         self.x = np.array([[initial_state]])
+        self.K = None
         # Error covariance initialize
         self.P = P * np.eye(1)
 
