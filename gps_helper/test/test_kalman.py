@@ -110,3 +110,28 @@ class TestKalman(GPSTest):
             # Update the Kalman filter
             x_saved[:, k, None] = pk.new_sample(z)
         npt.assert_almost_equal(x_test, x_saved[0, ::10])
+
+    def test_pos_kalman_x_vel(self):
+        """
+
+        :return:
+        """
+        dt = 0.1
+        t = np.arange(0, 10 + dt, dt)
+        x_saved = np.zeros((2, len(t)))
+        x_test = np.array([63.71165764, 81.26369543, 79.46747731, 79.05128724, 77.47045411,
+                           78.00121222, 80.21543726, 80.60963484, 81.56581114, 81.90123253,
+                           80.31546328])
+
+        # Create objects for the simulation
+        Q = np.array([[1, 0], [0, 3]])
+        R = np.array([[10, 0], [0, 2]])
+        gpv = sim.GetPosVel(Q=Q, R=R, dt=dt)
+        pk = kf.PosKalman(Q, R, initial_state=[0, 80])
+
+        for k in range(len(t)):
+            # take a measurement
+            z = gpv.measurement()
+            # Update the Kalman filter
+            x_saved[:, k, None] = pk.new_sample(z)
+        npt.assert_almost_equal(x_test, x_saved[1, ::10])
