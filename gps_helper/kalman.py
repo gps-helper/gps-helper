@@ -43,3 +43,45 @@ class SimpleKalman(object):
 
         self.volt = self.x[0]
         return self.volt
+
+
+class PosKalman(object):
+    """
+    Position Estimation from Position and Velocity Measurements
+
+    Python 3.x is assumed so the operator @ can be used for matrix multiply
+
+    Mark Wickert May 2018
+    """
+
+    def __init__(self, Q, R, initial_state=[0, 20], dt=0.1):
+        """
+        Initialize the object
+        """
+        self.dt = dt
+        self.A = np.array([[1, dt], [0, 1]])
+        self.H = np.array([[1, 0], [0, 1]])
+        # Process model covariance
+        self.Q = Q
+        # Measurement model covariance
+        self.R = R
+        self.x = np.array([[initial_state[0]], [initial_state[1]]])
+        # Error covariance initialize
+        self.P = 5 * np.eye(2)
+        # Initialize state
+        self.x = np.array([[0.0], [0.0]])
+
+    def new_sample(self, z):
+        """
+        Update the Kalman filter state by inputting a new
+        scalar measurement. Return the state array as a tuple
+        Update all other Kalman filter quantities
+        """
+        xp = self.A @ self.x
+        Pp = self.A @ self.P @ self.A.T + self.Q
+
+        self.K = Pp @ self.H.T * inv(self.H @ Pp @ self.H.T + self.R)
+
+        self.x = xp + self.K @ (z - self.H @ xp)
+        self.P = Pp - self.K @ self.H @ Pp
+        return self.x
