@@ -88,7 +88,8 @@ class TestKalman(GPSTest):
 
     def test_pos_kalman_x_pos(self):
         """
-
+        If only ten measurements are used, the tests do not cover all the way to convergence. Therefore, every tenth
+        sample is used for the test.
         :return:
         """
         dt = 0.1
@@ -113,7 +114,8 @@ class TestKalman(GPSTest):
 
     def test_pos_kalman_x_vel(self):
         """
-
+        If only ten measurements are used, the tests do not cover all the way to convergence. Therefore, every tenth
+        sample is used for the test.
         :return:
         """
         dt = 0.1
@@ -138,7 +140,8 @@ class TestKalman(GPSTest):
 
     def test_pos_kalman_p_pos(self):
         """
-
+        If only ten measurements are used, the tests do not cover all the way to convergence. Therefore, every tenth
+        sample is used for the test.
         :return:
         """
         dt = 0.1
@@ -165,7 +168,8 @@ class TestKalman(GPSTest):
 
     def test_pos_kalman_p_vel(self):
         """
-
+        If only ten measurements are used, the tests do not cover all the way to convergence. Therefore, every tenth
+        sample is used for the test.
         :return:
         """
         dt = 0.1
