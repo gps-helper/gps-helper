@@ -229,3 +229,39 @@ class TestKalman(GPSTest):
 
             x_saved[k, :] = dk.new_sample(z)
         npt.assert_almost_equal(x_test, x_saved[::10, 1])
+
+    def test_int_kalman_x_vel(self):
+        dt = 0.1
+        t = np.arange(0, 10 + dt, dt)
+        x_saved = np.zeros((len(t), 2))
+        x_test = np.array([44.82330127, 80.66266235, 72.73385292, 82.05528032, 74.8722922 ,
+                           82.66549625, 86.53350242, 80.31837348, 80.74624911, 83.77797869,
+                           80.57758014])
+
+        # Create objects for the simulation
+        gv = sim.GetVel()
+        ik = kf.IntKalman()
+
+        for k in range(len(t)):
+            z = gv.measurement()
+
+            x_saved[k, :] = ik.new_sample(z)
+        npt.assert_almost_equal(x_test, x_saved[::10, 1])
+
+    def test_int_kalman_x_pos(self):
+        dt = 0.1
+        t = np.arange(0, 10 + dt, dt)
+        x_saved = np.zeros((len(t), 2))
+        x_test = np.array([3.55145633, 77.7381104 , 153.44154205, 235.38042071,
+                           313.80303816, 394.62000052, 473.96915187, 554.86351,
+                           630.47869611, 712.59481293, 786.37162823])
+
+        # Create objects for the simulation
+        gv = sim.GetVel()
+        ik = kf.IntKalman()
+
+        for k in range(len(t)):
+            z = gv.measurement()
+
+            x_saved[k, :] = ik.new_sample(z)
+        npt.assert_almost_equal(x_test, x_saved[::10, 0])

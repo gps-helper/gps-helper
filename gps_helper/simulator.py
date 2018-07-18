@@ -98,3 +98,36 @@ class GetPos(object):
         self.posp = z - v
         self.velp = self.vel_set + w
         return z
+
+
+class GetVel(object):
+    """
+    A class for generating velocity measurements as found in Kim 11.4
+
+    Mark Wickert December 2017
+    """
+
+    def __init__(self, Pos_set=0, Vel_set=80.0, dt=0.1, var_v=10.0):
+        """
+        Initialize the object
+        """
+        self.Posp = Pos_set
+        self.Vel_set = Vel_set
+        self.Velp = Vel_set
+
+        self.dt = dt
+
+        self.var_v = var_v
+
+    def measurement(self):
+        """
+        Take a measurement
+        """
+        # The velocity measurement noise
+        v = 0 + self.var_v * np.random.randn(1)[0]
+
+        # Also update the truth values of position and velocity
+        self.Posp += self.Velp * self.dt
+        self.Velp = self.Vel_set + v
+        z = self.Velp
+        return z
