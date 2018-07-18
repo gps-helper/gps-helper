@@ -62,3 +62,26 @@ class TestKalman(GPSTest):
             sk.new_sample(z)
             k_saved[k] = sk.K
         npt.assert_almost_equal(k_test, k_saved[::10])
+
+    def test_simple_kalman_p(self):
+        """
+        If only ten measurements are used, the tests do not cover all the way to convergence. Therefore, every tenth
+        sample is used for the test.
+        :return:
+        """
+        dt = 0.1
+        t = np.arange(0, 10 + dt, dt)
+        p_saved = np.zeros(len(t))
+        p_test = np.array([2.4, 0.34285714, 0.18461538, 0.12631579, 0.096,
+                           0.07741935, 0.06486486, 0.05581395, 0.04897959, 0.04363636,
+                           0.03934426])
+
+        # Create objects for the simulation
+        gv = sim.GetVoltage(14.0, dt, sigma_w=2)
+        sk = kf.SimpleKalman(initial_state=14)
+
+        for k in range(len(t)):
+            z = gv.measurement()
+            sk.new_sample(z)
+            p_saved[k] = sk.P
+        npt.assert_almost_equal(p_test, p_saved[::10])
