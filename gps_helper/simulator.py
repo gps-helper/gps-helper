@@ -60,3 +60,41 @@ class GetPosVel(object):
         z1 = self.actual_pos + np.sqrt(self.R[0, 0]) * np.random.randn()
         z2 = self.actual_vel + np.sqrt(self.R[1, 1]) * np.random.randn()
         return np.array([[z1], [z2]])
+
+
+class GetPos(object):
+    """
+    A class for generating position measurements as found in Kim
+
+    Mark Wickert December 2017
+    """
+
+    def __init__(self, posp=0, vel_set=80.0, dt=0.1,
+                 var_w=10.0, var_v=10.0):
+        """
+        Initialize the object
+        """
+        self.posp = posp
+        self.vel_set = vel_set
+        self.velp = vel_set
+
+        self.dt = dt
+
+        self.var_w = var_w
+        self.var_v = var_v
+
+    def measurement(self):
+        """
+        Take a measurement
+        """
+        # The velocity process noise
+        w = 0 + self.var_w * np.random.randn(1)[0]
+        # The position measurement noise
+        v = 0 + self.var_v * np.random.randn(1)[0]
+
+        # Update the position measurement
+        z = self.posp + self.velp * self.dt + v
+        # Also update the truth values of position and velocity
+        self.posp = z - v
+        self.velp = self.vel_set + w
+        return z
