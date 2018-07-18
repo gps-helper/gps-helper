@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.io import loadmat
+import os
 
 
 class GetVoltage(object):
@@ -131,3 +133,35 @@ class GetVel(object):
         self.Velp = self.Vel_set + v
         z = self.Velp
         return z
+
+
+class GetSonar(object):
+    """
+    A class for playing back sonar altitude measurements as found in Kim 2.4
+    and later used in Kim 11.5
+
+    Mark Wickert December 2017
+    """
+
+    def __init__(self):
+        """
+        Initialize the object
+        """
+        sonar_path = os.path.join(os.path.dirname(__file__), '..', 'docs', 'source', 'nb_examples', 'SonarAlt.mat')
+        sonar_file = open(sonar_path)
+        sonarD = loadmat(sonar_file)
+        self.h = sonarD['sonarAlt'].flatten()
+        self.Max_pts = len(self.h)
+        self.k = 0
+
+    def measurement(self):
+        """
+        Take a measurement
+        """
+
+        h = self.h[self.k]
+        self.k += 1
+        if self.k > self.Max_pts:
+            print('Recycling data by starting over')
+            self.k = 0
+        return h
