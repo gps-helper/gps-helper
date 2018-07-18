@@ -2,6 +2,7 @@ from .test_helper import GPSTest
 from .. import kalman as kf
 from .. import simulator as sim
 import numpy as np
+from numpy.linalg import norm
 from numpy import testing as npt
 
 
@@ -265,3 +266,46 @@ class TestKalman(GPSTest):
 
             x_saved[k, :] = ik.new_sample(z)
         npt.assert_almost_equal(x_test, x_saved[::10, 0])
+
+    def test_ekf_x(self):
+        dt = 0.05
+        n_samples = 500
+        t = np.arange(n_samples) * dt
+        n_samples = len(t)
+        x_saved = np.zeros((n_samples, 3))
+        x_test = np.array([[   4.5       ,   90.        , 1048.35700227],
+                           [ 340.92701179,  129.19059199, 1007.64740711],
+                           [ 793.01850282,  153.83039049, 1003.76887912],
+                           [1187.81309238,  156.6880102 , 1003.96499988],
+                           [1635.12480478,  169.35387149, 1006.01391596],
+                           [1965.96084856,  148.35186341, 1000.27827996],
+                           [2411.82207964,  162.38496029, 1004.06328925],
+                           [2811.82330229,  161.8190544 , 1003.97565162],
+                           [3254.16219351,  168.74746912, 1004.5385335 ],
+                           [3630.89648321,  154.58882883, 1004.22494179]])
+
+        gr = sim.GetRadar()
+        ekf = kf.RadarEKF(dt, initial_state=[0, 90, 1100])
+        for k in range(n_samples):
+            xm = gr.measurement()
+            x_saved[k, :] = ekf.new_sample(xm)
+        npt.assert_almost_equal(x_test, x_saved[::50, :])
+
+    def test_ekf_z(self):
+        dt = 0.05
+        n_samples = 500
+        t = np.arange(n_samples) * dt
+        n_samples = len(t)
+        x_saved = np.zeros((n_samples, 3))
+        z_saved = np.zeros(n_samples)
+        z_test = np.array([1052.22272082, 1071.57581789, 1288.44638908, 1563.13684492,
+       1927.27212923, 2210.78424339, 2617.51747043, 2990.06735689,
+       3409.85996124, 3770.3812422 ])
+
+        gr = sim.GetRadar()
+        ekf = kf.RadarEKF(dt, initial_state=[0, 90, 1100])
+        for k in range(n_samples):
+            xm = gr.measurement()
+            x_saved[k, :] = ekf.new_sample(xm)
+            z_saved[k] = norm(x_saved[k])
+        npt.assert_almost_equal(z_test, z_saved[::50])

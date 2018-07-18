@@ -171,3 +171,44 @@ class GetSonar(object):
             print('Recycling data by starting over')
             self.k = 0
         return h
+
+
+class GetRadar(object):
+    """
+    A class for generating radar slant range measurements as found in Kim 14.4
+
+    Mark Wickert December 2017
+    """
+
+    def __init__(self, Pos_set=0, Vel_set=80.0, Alt_set=1000, dt=0.1,
+                 var_Vel=25.0, var_Alt=100):
+        """
+        Initialize the object
+        """
+        self.posp = Pos_set
+        self.vel_set = Vel_set
+        self.alt_set = Alt_set
+
+        self.dt = dt
+
+        self.var_vel = var_Vel
+        self.var_alt = var_Alt
+
+    def measurement(self):
+        """
+        Take a measurement
+        """
+        # The velocity process with uncertainty
+        vel = self.vel_set + np.sqrt(self.var_vel) * np.random.randn(1)[0]
+        # The altitude process with uncertainty
+        alt = self.alt_set + np.sqrt(self.var_alt) * np.random.randn(1)[0]
+
+        # New position
+        pos = self.posp + vel * self.dt
+
+        # Slant range measurement noise
+        v = 0 + pos * 0.05 * np.random.randn(1)[0]
+        # The slant range
+        r = np.sqrt(pos ** 2 + alt ** 2) + v
+        self.posp = pos
+        return r
