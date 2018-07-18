@@ -1,6 +1,10 @@
 import numpy as np
-from scipy.io import loadmat
 import os
+import warnings
+try:
+    from scipy.io import loadmat
+except ImportError:
+    warnings.warn("scipy was not found; used for GetSonar")
 
 
 class GetVoltage(object):
@@ -139,6 +143,8 @@ class GetSonar(object):
     """
     A class for playing back sonar altitude measurements as found in Kim 2.4
     and later used in Kim 11.5
+
+    This example requires the scipy package to load a .mat file.
 
     Mark Wickert December 2017
     """
