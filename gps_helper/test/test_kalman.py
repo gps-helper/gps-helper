@@ -309,3 +309,12 @@ class TestKalman(GPSTest):
             x_saved[k, :] = ekf.new_sample(xm)
             z_saved[k] = norm(x_saved[k])
         npt.assert_almost_equal(z_test, z_saved[::50])
+
+    def test_sigma_points(self):
+        xm = np.array([[5], [5]])
+        px = 9 * np.eye(2)
+        kappa = 2
+        xi, w = kf.sigma_points(xm, px, kappa)  # sigma points and weights
+        xi_test = [[ 5., 11., 5., -1., 5.],
+                   [ 5., 5., 11., 5., -1.]]
+        w_test = [0.5, 0.125, 0.125, 0.125, 0.125]

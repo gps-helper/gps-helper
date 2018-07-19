@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.linalg import inv
+from numpy.linalg.linalg import cholesky
 
 
 class SimpleKalman(object):
@@ -244,3 +245,48 @@ class RadarEKF(object):
         H[0, 1] = 0
         H[0, 2] = xp[2] / np.sqrt(xp[0] ** 2 + xp[2] ** 2)
         return H
+
+def sigma_points(xm, P, kappa):
+    """
+    Calculate the Sigma Points of an unscented Kalman filter
+
+    Mark Wickert December 2017
+    Translated P. Kim's program from m-code
+    """
+    n = xm.size
+    Xi = np.zeros((n, 2 * n + 1))  # sigma points = col of Xi
+    W = np.zeros(2 * n + 1)
+    Xi[:, 0, None] = xm
+    W[0] = kappa / (n + kappa)
+
+    U = cholesky((n + kappa) * P)  # U'*U = (n+kappa)*P
+
+    for k in range(n):
+        Xi[:, k + 1, None] = xm + U[k, None, :].T  # row of U
+        W[k + 1] = 1 / (2 * (n + kappa))
+
+    for k in range(n):
+        Xi[:, n + k + 1, None] = xm - U[k, None, :].T
+        W[n + k + 1] = 1 / (2 * (n + kappa))
+
+    return Xi, W
+
+def ut(Xi, W, noise_cov=0):
+    """
+    Unscented transformation
+
+    Mark Wickert December 2017
+    Translated P. Kim's program from m-code
+    """
+    n, kmax = Xi.shape
+
+    xm = np.zeros((n, 1))
+    for k in range(kmax):
+        xm += W[k] * Xi[:, k, None]
+
+    xcov = np.zeros((n, n))
+    for k in range(kmax):
+        xcov += W[k] * (Xi[:, k, None] - xm) * (Xi[:, k, None] - xm).T
+
+    xcov += noise_cov
+    return xm, xcov
