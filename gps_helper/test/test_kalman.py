@@ -318,3 +318,16 @@ class TestKalman(GPSTest):
         xi_test = [[ 5., 11., 5., -1., 5.],
                    [ 5., 5., 11., 5., -1.]]
         w_test = [0.5, 0.125, 0.125, 0.125, 0.125]
+        npt.assert_almost_equal(xi_test, xi)
+        npt.assert_almost_equal(w_test, w)
+
+    def test_ut(self):
+        xm = np.array([[5], [5]])
+        px = 9 * np.eye(2)
+        kappa = 2
+        x_avg_test = [[5.], [5.]]
+        x_cov_test = [[9., 0.], [0., 9.]]
+        xi, w = kf.sigma_points(xm, px, kappa)  # sigma points and weights
+        xAvg, xCov = kf.ut(xi, w)  # estimate mean vector and covariance matrix using sigma points
+        npt.assert_almost_equal(x_avg_test, xAvg)
+        npt.assert_almost_equal(x_cov_test, xCov)
