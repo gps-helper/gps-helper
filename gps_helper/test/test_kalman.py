@@ -331,3 +331,71 @@ class TestKalman(GPSTest):
         xAvg, xCov = kf.ut(xi, w)  # estimate mean vector and covariance matrix using sigma points
         npt.assert_almost_equal(x_avg_test, xAvg)
         npt.assert_almost_equal(x_cov_test, xCov)
+
+    def test_radar_ukf_x(self):
+        x_test = np.array([[   4.11483289,   89.9807873 , 1006.07122023],
+       [ 352.3105395 ,  111.00439655, 1007.21596109],
+       [ 760.28088421,  129.09475887, 1013.98092468],
+       [1146.57543567,  135.45782881, 1023.0940802 ],
+       [1570.56204941,  142.75711716, 1041.58425653],
+       [1920.57768989,  141.88223322, 1039.88681358],
+       [2352.56816971,  149.54007223, 1056.58613916],
+       [2759.93367043,  153.00065999, 1063.05210355],
+       [3197.83961482,  158.44281893, 1072.24895062],
+       [3601.64732546,  158.77005313, 1073.01176455]])
+        dt = 0.05
+        n_samples = 500
+        t = np.arange(n_samples) * dt
+        n_samples = len(t)
+        x_saved = np.zeros((n_samples, 3))
+
+        gr = sim.GetRadar()
+        r_ukf = kf.RadarUKF(dt, initial_state=[0, 90, 1100])
+        for k in range(n_samples):
+            xm = gr.measurement()
+            x_saved[k, :] = r_ukf.new_sample(xm)
+        npt.assert_almost_equal(x_test, x_saved[::50, :])
+
+    def test_radar_ukf_z(self):
+        z_test = np.array([1010.09542821, 1072.81344351, 1273.91121954, 1542.62942731,
+                           1889.95833525, 2188.63286461, 2583.27572973, 2961.54061968,
+                           3376.5367081 , 3761.43930347])
+        dt = 0.05
+        n_samples = 500
+        t = np.arange(n_samples) * dt
+        n_samples = len(t)
+        x_saved = np.zeros((n_samples, 3))
+        z_saved = np.zeros(n_samples)
+
+        gr = sim.GetRadar()
+        r_ukf = kf.RadarUKF(dt, initial_state=[0, 90, 1100])
+        for k in range(n_samples):
+            xm = gr.measurement()
+            x_saved[k, :] = r_ukf.new_sample(xm)
+            z_saved[k] = norm(x_saved[k])
+        npt.assert_almost_equal(z_test, z_saved[::50])
+
+    def test_radar_ukf_k(self):
+        k_test = np.array([[3.72767389e-03, 1.85941828e-04, 9.09049215e-01],
+                           [3.61211252e-01, 7.79001494e-02, 1.78803480e-02],
+                           [8.96156438e-02, 1.19831691e-02, 1.10461769e-02],
+                           [4.37106654e-02, 4.44888833e-03, 8.91105184e-03],
+                           [2.83271141e-02, 2.62417475e-03, 7.81276553e-03],
+                           [2.25960281e-02, 2.85581248e-03, 6.27331967e-03],
+                           [2.09285314e-02, 2.47122914e-03, 4.92643172e-03],
+                           [1.99822813e-02, 2.31160049e-03, 4.09337298e-03],
+                           [1.94611058e-02, 2.22562871e-03, 3.51757877e-03],
+                           [1.91697107e-02, 2.17315151e-03, 3.11253739e-03]])
+        dt = 0.05
+        n_samples = 500
+        t = np.arange(n_samples) * dt
+        n_samples = len(t)
+        k_saved = np.zeros((n_samples, 3))
+
+        gr = sim.GetRadar()
+        r_ukf = kf.RadarUKF(dt, initial_state=[0, 90, 1100])
+        for k in range(n_samples):
+            xm = gr.measurement()
+            r_ukf.new_sample(xm)
+            k_saved[k, :] = r_ukf.K.T
+        npt.assert_almost_equal(k_test, k_saved[::50, :])

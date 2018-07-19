@@ -290,3 +290,78 @@ def ut(Xi, W, noise_cov=0):
 
     xcov += noise_cov
     return xm, xcov
+
+
+class RadarUKF(object):
+    """
+    Kim Chapter 15.4 Radar Range Tracking UKF Version
+
+    Python 3.x is assumed so the operator @ can be used for matrix multiply
+
+    Mark Wickert December 2017
+    """
+
+    def __init__(self, dt=0.05, initial_state=[0, 90, 1100]):
+        """
+        Initialize the object
+        """
+        self.dt = dt
+        self.n = 3
+        self.m = 1
+        # Process model covariance
+        self.Q = np.array([[0, 0, 0], [0, 0.001, 0], [0, 0, 0.001]])
+        # Measurement model covariance
+        self.R = np.array([[10]])
+        self.x = np.array([initial_state]).T
+        # Error covariance initialize
+        self.P = 100 * np.eye(3)
+        self.K = np.zeros((self.n, 1))
+        # Initialize pos and vel
+        self.pos = 0.0
+        self.vel = 0.0
+        self.alt = 0.0
+
+    def new_sample(self, z, kappa=0):
+        """
+        Update the Kalman filter state by inputting a new scalar measurement.
+        Return the state array as a tuple
+        Update all other Kalman filter quantities
+        """
+        Xi, W = sigma_points(self.x, self.P, 0)
+        fXi = np.zeros((self.n, 2 * self.n + 1))
+        for k in range(2 * self.n + 1):
+            fXi[:, k, None] = self.fx(Xi[:, k, None])
+        xp, Pp = ut(fXi, W, self.Q)
+
+        hXi = np.zeros((self.m, 2 * self.n + 1))
+        for k in range(2 * self.n + 1):
+            hXi[:, k, None] = self.hx(fXi[:, k, None])
+        zp, Pz = ut(hXi, W, self.R)
+
+        Pxz = np.zeros((self.n, self.m))
+        for k in range(2 * self.n + 1):
+            Pxz += W[k] * (fXi[:, k, None] - xp) @ (hXi[:, k, None] - zp).T
+
+        self.K = Pxz * inv(Pz)
+        self.x = xp + self.K * (z - zp)
+        self.P = Pp - self.K @ Pz @ self.K.T
+
+        self.pos = self.x[0]
+        self.vel = self.x[1]
+        self.alt = self.x[2]
+        return self.pos, self.vel, self.alt
+
+    def fx(self, x):
+        """
+        The function f(x) in Kim
+        """
+        A = np.eye(3) + self.dt * np.array([[0, 1, 0], [0, 0, 0], [0, 0, 0]])
+        xp = A @ x
+        return xp
+
+    def hx(self, x):
+        """
+        The range equation r(x1,x3)
+        """
+        yp = np.sqrt(x[0] ** 2 + x[2] ** 2)
+        return yp
