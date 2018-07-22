@@ -38,7 +38,7 @@ class TestKalman(GPSTest):
 
         for k in range(len(t)):
             z = gv.measurement()
-            x_saved[k, :] = sk.new_sample(z)
+            x_saved[k, :] = sk.next_sample(z)
         npt.assert_almost_equal(x_test, x_saved[::10])
 
     def test_simple_kalman_k(self):
@@ -60,7 +60,7 @@ class TestKalman(GPSTest):
 
         for k in range(len(t)):
             z = gv.measurement()
-            sk.new_sample(z)
+            sk.next_sample(z)
             k_saved[k] = sk.K
         npt.assert_almost_equal(k_test, k_saved[::10])
 
@@ -83,7 +83,7 @@ class TestKalman(GPSTest):
 
         for k in range(len(t)):
             z = gv.measurement()
-            sk.new_sample(z)
+            sk.next_sample(z)
             p_saved[k] = sk.P
         npt.assert_almost_equal(p_test, p_saved[::10])
 
@@ -110,7 +110,7 @@ class TestKalman(GPSTest):
             # take a measurement
             z = gpv.measurement()
             # Update the Kalman filter
-            x_saved[:, k, None] = pk.new_sample(z)
+            x_saved[:, k, None] = pk.next_sample(z)
         npt.assert_almost_equal(x_test, x_saved[0, ::10])
 
     def test_pos_kalman_x_vel(self):
@@ -136,7 +136,7 @@ class TestKalman(GPSTest):
             # take a measurement
             z = gpv.measurement()
             # Update the Kalman filter
-            x_saved[:, k, None] = pk.new_sample(z)
+            x_saved[:, k, None] = pk.next_sample(z)
         npt.assert_almost_equal(x_test, x_saved[1, ::10])
 
     def test_pos_kalman_p_pos(self):
@@ -163,7 +163,7 @@ class TestKalman(GPSTest):
             # take a measurement
             z = gpv.measurement()
             # Update the Kalman filter
-            x_saved[:, k, None] = pk.new_sample(z)
+            x_saved[:, k, None] = pk.next_sample(z)
             p_diag[k, :] = pk.P.diagonal()
         npt.assert_almost_equal(p_test, p_diag[::10, 0])
 
@@ -191,7 +191,7 @@ class TestKalman(GPSTest):
             # take a measurement
             z = gpv.measurement()
             # Update the Kalman filter
-            x_saved[:, k, None] = pk.new_sample(z)
+            x_saved[:, k, None] = pk.next_sample(z)
             p_diag[k, :] = pk.P.diagonal()
         npt.assert_almost_equal(p_test, p_diag[::10, 1])
 
@@ -210,7 +210,7 @@ class TestKalman(GPSTest):
         for k in range(len(t)):
             z = gp.measurement()
 
-            x_saved[k, :] = dk.new_sample(z)
+            x_saved[k, :] = dk.next_sample(z)
         npt.assert_almost_equal(x_test, x_saved[::10, 0])
 
     def test_dv_kalman_x_vel(self):
@@ -228,7 +228,7 @@ class TestKalman(GPSTest):
         for k in range(len(t)):
             z = gp.measurement()
 
-            x_saved[k, :] = dk.new_sample(z)
+            x_saved[k, :] = dk.next_sample(z)
         npt.assert_almost_equal(x_test, x_saved[::10, 1])
 
     def test_int_kalman_x_vel(self):
@@ -246,7 +246,7 @@ class TestKalman(GPSTest):
         for k in range(len(t)):
             z = gv.measurement()
 
-            x_saved[k, :] = ik.new_sample(z)
+            x_saved[k, :] = ik.next_sample(z)
         npt.assert_almost_equal(x_test, x_saved[::10, 1])
 
     def test_int_kalman_x_pos(self):
@@ -264,7 +264,7 @@ class TestKalman(GPSTest):
         for k in range(len(t)):
             z = gv.measurement()
 
-            x_saved[k, :] = ik.new_sample(z)
+            x_saved[k, :] = ik.next_sample(z)
         npt.assert_almost_equal(x_test, x_saved[::10, 0])
 
     def test_ekf_x(self):
@@ -288,7 +288,7 @@ class TestKalman(GPSTest):
         ekf = kf.RadarEKF(dt, initial_state=[0, 90, 1100])
         for k in range(n_samples):
             xm = gr.measurement()
-            x_saved[k, :] = ekf.new_sample(xm)
+            x_saved[k, :] = ekf.next_sample(xm)
         npt.assert_almost_equal(x_test, x_saved[::50, :])
 
     def test_ekf_z(self):
@@ -306,7 +306,7 @@ class TestKalman(GPSTest):
         ekf = kf.RadarEKF(dt, initial_state=[0, 90, 1100])
         for k in range(n_samples):
             xm = gr.measurement()
-            x_saved[k, :] = ekf.new_sample(xm)
+            x_saved[k, :] = ekf.next_sample(xm)
             z_saved[k] = norm(x_saved[k])
         npt.assert_almost_equal(z_test, z_saved[::50])
 
@@ -353,7 +353,7 @@ class TestKalman(GPSTest):
         r_ukf = kf.RadarUKF(dt, initial_state=[0, 90, 1100])
         for k in range(n_samples):
             xm = gr.measurement()
-            x_saved[k, :] = r_ukf.new_sample(xm)
+            x_saved[k, :] = r_ukf.next_sample(xm)
         npt.assert_almost_equal(x_test, x_saved[::50, :])
 
     def test_radar_ukf_z(self):
@@ -371,7 +371,7 @@ class TestKalman(GPSTest):
         r_ukf = kf.RadarUKF(dt, initial_state=[0, 90, 1100])
         for k in range(n_samples):
             xm = gr.measurement()
-            x_saved[k, :] = r_ukf.new_sample(xm)
+            x_saved[k, :] = r_ukf.next_sample(xm)
             z_saved[k] = norm(x_saved[k])
         npt.assert_almost_equal(z_test, z_saved[::50])
 
@@ -396,6 +396,6 @@ class TestKalman(GPSTest):
         r_ukf = kf.RadarUKF(dt, initial_state=[0, 90, 1100])
         for k in range(n_samples):
             xm = gr.measurement()
-            r_ukf.new_sample(xm)
+            r_ukf.next_sample(xm)
             k_saved[k, :] = r_ukf.K.T
         npt.assert_almost_equal(k_test, k_saved[::50, :])

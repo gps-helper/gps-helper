@@ -28,7 +28,7 @@ class SimpleKalman(object):
         # Error covariance initialize
         self.P = P * np.eye(1)
 
-    def new_sample(self, z):
+    def next_sample(self, z):
         """
         Update the Kalman filter state by inputting a new
         scalar measurement. Return the state array as a tuple
@@ -72,7 +72,7 @@ class PosKalman(object):
         # Initialize state
         self.x = np.array([[0.0], [0.0]])
 
-    def new_sample(self, z):
+    def next_sample(self, z):
         """
         Update the Kalman filter state by inputting a new
         scalar measurement. Return the state array as a tuple
@@ -115,7 +115,7 @@ class DvKalman(object):
         self.pos = 0.0
         self.vel = 0.0
 
-    def new_sample(self, z):
+    def next_sample(self, z):
         """
         Update the Kalman filter state by inputting a new
         scalar measurement. Return the state array as a tuple
@@ -161,7 +161,7 @@ class IntKalman(object):
         self.pos = 0.0
         self.vel = 0.0
 
-    def new_sample(self, z):
+    def next_sample(self, z):
         """
         Update the Kalman filter state by inputting a new scalar measurement.
         Return the state array as a tuple
@@ -207,7 +207,7 @@ class RadarEKF(object):
         self.vel = 0.0
         self.alt = 0.0
 
-    def new_sample(self, z):
+    def next_sample(self, z):
         """
         Update the Kalman filter state by inputting a new scalar measurement.
         Return the state array as a tuple
@@ -321,7 +321,7 @@ class RadarUKF(object):
         self.vel = 0.0
         self.alt = 0.0
 
-    def new_sample(self, z, kappa=0):
+    def next_sample(self, z, kappa=0):
         """
         Update the Kalman filter state by inputting a new scalar measurement.
         Return the state array as a tuple
