@@ -19,7 +19,7 @@ Welcome to gps-helper's documentation!
 
    gps_helper
    smoothing
-
+   kalman
 
 
 Indices and tables
