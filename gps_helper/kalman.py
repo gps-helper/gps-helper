@@ -50,7 +50,7 @@ class PosKalman(object):
     """
     Position Estimation from Position and Velocity Measurements
 
-    Python 3.x is assumed so the operator @ can be used for matrix multiply
+    Python > 3.5 is assumed so the operator @ can be used for matrix multiply
 
     Mark Wickert May 2018
     """
@@ -92,7 +92,7 @@ class DvKalman(object):
     """
     Kim Chapter 11.2 Velocity from Position Estimation
 
-    Python 3.x is assumed so the operator @ can be used for matrix multiply
+    Python > 3.5 is assumed so the operator @ can be used for matrix multiply
 
     Mark Wickert December 2017
     """
@@ -138,7 +138,7 @@ class IntKalman(object):
     """
     Kim Chapter 11.4 Position from Velocity Estimation
 
-    Python 3.x is assumed so the operator @ can be used for matrix multiply
+    Python > 3.5 is assumed so the operator @ can be used for matrix multiply
 
     Mark Wickert December 2017
     """
@@ -184,7 +184,7 @@ class RadarEKF(object):
     """
     Kim Chapter 14.4 Radar Range Tracking
 
-    Python 3.x is assumed so the operator @ can be used for matrix multiply
+    Python > 3.5 is assumed so the operator @ can be used for matrix multiply
 
     Mark Wickert December 2017
     """
@@ -296,7 +296,7 @@ class RadarUKF(object):
     """
     Kim Chapter 15.4 Radar Range Tracking UKF Version
 
-    Python 3.x is assumed so the operator @ can be used for matrix multiply
+    Python > 3.5 is assumed so the operator @ can be used for matrix multiply
 
     Mark Wickert December 2017
     """
