@@ -27,7 +27,7 @@ class TestGPSHelper(GPSTest):
     def test_GPSDataSource_get_gps_sv(self):
         prn_32_test = '1 41328U 16007A   18010.14192069  .00000081  00000-0  00000+0 0  9992',\
                       '2 41328  54.8561 211.7917 0016757 212.5950 147.3462  2.00569342 14112'
-        prn_dict = self.gps_ds.get_gps_sv(tle_path)
+        prn_dict = self.gps_ds.GPS_sv_dict
         self.assertEqual(prn_dict['PRN 32'], prn_32_test)
 
     def test_GPSDataSource_init(self):
