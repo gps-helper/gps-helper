@@ -4,6 +4,7 @@ import numpy as np
 from sgp4.io import twoline2rv
 from sgp4.io import jday
 from sgp4.earth_gravity import wgs84
+from . tle_parsers import get_celestrak_sv
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -16,7 +17,7 @@ except ImportError:
     warnings.warn("mayavi not imported due to import error")
 
 radius = 6371669.9
-
+tle_parsers = {'celestrak': get_celestrak_sv}
 
 class GPSDataSource(object):
     """
@@ -28,7 +29,7 @@ class GPSDataSource(object):
     """
 
     def __init__(self, gps_tle_file, rx_sv_list=('PRN 03', 'PRN 09', 'PRN 22', 'PRN 26'),
-                 ref_lla=(38.8454167, -104.7215556, 1903.0), ts=1.0):
+                 ref_lla=(38.8454167, -104.7215556, 1903.0), ts=1.0, tle_source='celestrak'):
         """
         Parameters
         ----------
@@ -55,7 +56,9 @@ class GPSDataSource(object):
         """
         Read GPS TLEs into dictionary
         """
-        self.GPS_sv_dict = self.get_gps_sv(self.GPS_TLE_file)
+        if tle_source in tle_parsers:
+            parser = tle_parsers[tle_source]
+        self.GPS_sv_dict = parser(self.GPS_TLE_file)
 
         """
         Initialize Four SGP4 satellite objects in tuple satellite 
@@ -72,28 +75,6 @@ class GPSDataSource(object):
         self.t_delta = np.array([0])
         self.N_sim_steps = 0
 
-    def get_gps_sv(self, tle):
-        """
-        Place a text file of Celestrak GPS TLEs into a dictionary with
-        keys of the form 'PRN xx' for the SV of interest
-
-        :param tle: Path to two line element set file.
-        :return: dict
-        """
-        GPS_sv_dict = {}
-        with open(tle, 'rt') as f:
-            for line in f:
-                if line[0:3] == 'GPS':
-                    PRN = line[line.find('PRN'):line.find(')')]
-                elif line[0] == '1':
-                    tle_ln1 = line.strip('\n')
-                elif line[0] == '2':
-                    tle_ln2 = line.strip('\n')
-                    GPS_sv_dict.update({PRN: (tle_ln1, tle_ln2)})
-                else:
-                    print('File structure incorrect')
-                    break
-        return GPS_sv_dict
 
     def create_sv_data_set(self, yr2, mon, day, hr, minute):
         """
