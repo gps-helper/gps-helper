@@ -1,10 +1,9 @@
-import os
 import warnings
 import numpy as np
 from sgp4.io import twoline2rv
 from sgp4.io import jday
 from sgp4.earth_gravity import wgs84
-from . tle_parsers import get_celestrak_sv
+from . tle_parsers import get_celestrak_sv, get_spacetrack_sv
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -17,7 +16,8 @@ except ImportError:
     warnings.warn("mayavi not imported due to import error")
 
 radius = 6371669.9
-tle_parsers = {'celestrak': get_celestrak_sv}
+tle_parsers = {'celestrak': get_celestrak_sv, 'spacetrack': get_spacetrack_sv}
+
 
 class GPSDataSource(object):
     """
@@ -35,6 +35,8 @@ class GPSDataSource(object):
         ----------
         gps_tle_file : A text file extracted from Celestrak Web Site
         ref_lla : A 3 element tuple of lat(deg), lon(deg), and ele(m)
+        ts : Time step in seconds
+        tle_source : The source parser to use.
 
         Returns
         -------
@@ -42,7 +44,9 @@ class GPSDataSource(object):
 
         Notes
         -----
-        Default lla is CosmicAES COS office
+        Default lla is CosmicAES COS office.
+        There is a tle_parsers dict that stores functions for parsers. The provided ones are 'celestrak' and
+        'spacetrack'.
         """
         self.ref_lla = ref_lla
         self.GPS_TLE_file = gps_tle_file
@@ -61,7 +65,7 @@ class GPSDataSource(object):
         self.GPS_sv_dict = parser(self.GPS_TLE_file)
 
         """
-        Initialize SGP4 satellite objects in dict satellite 
+        Initialize SGP4 satellite objects in list satellite 
         """
         self.satellite = []
         for prn in self.Rx_sv_list:
@@ -97,7 +101,8 @@ class GPSDataSource(object):
 
         Notes
         -----
-
+        This function requires N_sim_steps to be initialized for the SV_Pos and SV_Vel arrays to be created, and t_delta
+        needs to be precalculated so that offsets can be passed to :meth:`GPSDataSource.propagate_ecef`.
 
         Examples
         --------
