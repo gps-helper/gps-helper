@@ -13,5 +13,6 @@ script:
 - tox
 after_success:
 - pip install coveralls
+- pip install .[plotting]
 - coverage run --source=gps_helper setup.py test
 - coveralls
