@@ -33,5 +33,6 @@ setup(name='gps_helper',
       tests_require=['nose', 'tox', 'numpy'],
       extras_require={
             'plotting': plotting.split()
-      }
+      },
+      python_requires='>=3.5',
       )
