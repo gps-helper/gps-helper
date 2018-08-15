@@ -1,9 +1,9 @@
-import os
 import warnings
 import numpy as np
 from sgp4.io import twoline2rv
 from sgp4.io import jday
 from sgp4.earth_gravity import wgs84
+from . tle_parsers import get_celestrak_sv, get_spacetrack_sv
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -16,6 +16,7 @@ except ImportError:
     warnings.warn("mayavi not imported due to import error")
 
 radius = 6371669.9
+tle_parsers = {'celestrak': get_celestrak_sv, 'spacetrack': get_spacetrack_sv}
 
 
 class GPSDataSource(object):
@@ -28,12 +29,14 @@ class GPSDataSource(object):
     """
 
     def __init__(self, gps_tle_file, rx_sv_list=('PRN 03', 'PRN 09', 'PRN 22', 'PRN 26'),
-                 ref_lla=(38.8454167, -104.7215556, 1903.0), ts=1.0):
+                 ref_lla=(38.8454167, -104.7215556, 1903.0), ts=1.0, tle_source='celestrak'):
         """
         Parameters
         ----------
         gps_tle_file : A text file extracted from Celestrak Web Site
         ref_lla : A 3 element tuple of lat(deg), lon(deg), and ele(m)
+        ts : Time step in seconds
+        tle_source : The source parser to use.
 
         Returns
         -------
@@ -41,7 +44,9 @@ class GPSDataSource(object):
 
         Notes
         -----
-        Default lla is CosmicAES COS office
+        Default lla is CosmicAES COS office.
+        There is a tle_parsers dict that stores functions for parsers. The provided ones are 'celestrak' and
+        'spacetrack'.
         """
         self.ref_lla = ref_lla
         self.GPS_TLE_file = gps_tle_file
@@ -50,20 +55,21 @@ class GPSDataSource(object):
         Perform coordinate conversion
         """
         # convert from llh (or lla) to earth centric fixed
-        self.ref_ecef = self.llh2ecef(self.ref_lla)
+        self.ref_ecef = llh2ecef(self.ref_lla)
 
         """
         Read GPS TLEs into dictionary
         """
-        self.GPS_sv_dict = self.get_gps_sv(self.GPS_TLE_file)
+        if tle_source in tle_parsers:
+            parser = tle_parsers[tle_source]
+        self.GPS_sv_dict = parser(self.GPS_TLE_file)
 
         """
-        Initialize Four SGP4 satellite objects in tuple satellite 
+        Initialize SGP4 satellite objects in list satellite 
         """
         self.satellite = []
-        for k in range(4):
-            PRN = self.Rx_sv_list[k]
-            self.satellite.append(twoline2rv(self.GPS_sv_dict[PRN][0], self.GPS_sv_dict[PRN][1], wgs84))
+        for prn in self.Rx_sv_list:
+            self.satellite.append(twoline2rv(self.GPS_sv_dict[prn][0], self.GPS_sv_dict[prn][1], wgs84))
 
         """
         Time offset relative to satellite propagation start time
@@ -71,29 +77,6 @@ class GPSDataSource(object):
         self.Ts = ts
         self.t_delta = np.array([0])
         self.N_sim_steps = 0
-
-    def get_gps_sv(self, tle):
-        """
-        Place a text file of Celestrak GPS TLEs into a dictionary with
-        keys of the form 'PRN xx' for the SV of interest
-
-        :param tle: Path to two line element set file.
-        :return: dict
-        """
-        GPS_sv_dict = {}
-        with open(tle, 'rt') as f:
-            for line in f:
-                if line[0:3] == 'GPS':
-                    PRN = line[line.find('PRN'):line.find(')')]
-                elif line[0] == '1':
-                    tle_ln1 = line.strip('\n')
-                elif line[0] == '2':
-                    tle_ln2 = line.strip('\n')
-                    GPS_sv_dict.update({PRN: (tle_ln1, tle_ln2)})
-                else:
-                    print('File structure incorrect')
-                    break
-        return GPS_sv_dict
 
     def create_sv_data_set(self, yr2, mon, day, hr, minute):
         """
@@ -118,7 +101,8 @@ class GPSDataSource(object):
 
         Notes
         -----
-
+        This function requires N_sim_steps to be initialized for the SV_Pos and SV_Vel arrays to be created, and t_delta
+        needs to be precalculated so that offsets can be passed to :meth:`GPSDataSource.propagate_ecef`.
 
         Examples
         --------
@@ -128,7 +112,7 @@ class GPSDataSource(object):
         SV_Pos = np.zeros((4, 3, self.N_sim_steps))
         SV_Vel = np.zeros((4, 3, self.N_sim_steps))
         year = 2000 + yr2
-        for n in range(4):
+        for n in range(len(self.Rx_sv_list)):
             for k, tk in enumerate(self.t_delta):
                 SV_Pos[n, :, k], SV_Vel[n, :, k], gst = self.propagate_ecef(self.satellite[n], year, mon, day, hr,
                                                                             minute, tk)
@@ -340,54 +324,6 @@ class GPSDataSource(object):
         gst = temp
         return gst
 
-    def llh2ecef(self, llh):
-        """
-        Convert lat,lon,hgt geographic coords to X,Y,Z Earth Centered Earth
-        Fixed (ecef) or just (ecf) coords.
-
-        Parameters
-        ----------
-        llh : A three element ndarray containing latitude(lat), longitude (lon), and altitude (a) or height (hgt), all in meters
-
-        Returns
-        -------
-        x : The ecef x coordinate
-        y : The ecef y coordinate
-        z : The ecef z coordinate
-
-        Notes
-        -----
-        This is a private function that computes:
-        N = a/sqrt( 1 - f*(2-f)*sin(lat)*sin(lat) )
-        X = (N + h)*cos(lat)*cos(lon)
-        Y = (N + h)*cos(lat)*sin(lon)
-        Z = ((1-f)^2 * N + h)*sin(lat)
-        by also calling EarthModel()
-
-        Examples
-        --------
-
-        """
-
-        lat = llh[0] * np.pi / 180.
-        lon = llh[1] * np.pi / 180.
-        hgt = llh[2]
-
-        ecf = np.zeros(3)
-        " Set up WGS-84 constants."
-        a, f = earth_model()
-
-        " Store some commonly used values."
-        slat = np.sin(lat)
-        N = a / np.sqrt(1 - f * (2 - f) * slat ** 2)
-        Nplushgtclat = (N + hgt) * np.cos(lat)
-
-        x = Nplushgtclat * np.cos(lon)
-        y = Nplushgtclat * np.sin(lon)
-        z = ((1 - f) ** 2 * N + hgt) * slat
-
-        return np.array([x, y, z])
-
     def days2mdh(self, year, days):
         """
         This function converts the day of the year, days, to the equivalent month day,
@@ -500,6 +436,55 @@ def earth_model():
     a = 6378137.0  # meters
     f = 1.0 / 298.257223563
     return a, f
+
+
+def llh2ecef(llh):
+    """
+    Convert lat,lon,hgt geographic coords to X,Y,Z Earth Centered Earth
+    Fixed (ecef) or just (ecf) coords.
+
+    Parameters
+    ----------
+    llh : A three element ndarray containing latitude(lat), longitude (lon), and altitude (a) or height (hgt), all in meters
+
+    Returns
+    -------
+    x : The ecef x coordinate
+    y : The ecef y coordinate
+    z : The ecef z coordinate
+
+    Notes
+    -----
+    This is a function that computes:
+    N = a/sqrt( 1 - f*(2-f)*sin(lat)*sin(lat) )
+    X = (N + h)*cos(lat)*cos(lon)
+    Y = (N + h)*cos(lat)*sin(lon)
+    Z = ((1-f)^2 * N + h)*sin(lat)
+    by also calling EarthModel()
+
+    Examples
+    --------
+
+    """
+
+    lat = llh[0] * np.pi / 180.
+    lon = llh[1] * np.pi / 180.
+    hgt = llh[2]
+
+    ecf = np.zeros(3)
+    " Set up WGS-84 constants."
+    a, f = earth_model()
+
+    " Store some commonly used values."
+    slat = np.sin(lat)
+    N = a / np.sqrt(1 - f * (2 - f) * slat ** 2)
+    Nplushgtclat = (N + hgt) * np.cos(lat)
+
+    x = Nplushgtclat * np.cos(lon)
+    y = Nplushgtclat * np.sin(lon)
+    z = ((1 - f) ** 2 * N + hgt) * slat
+
+    return np.array([x, y, z])
 
 
 def ecef2enu(r_ecef, r_ref, phi_ref, lam_ref):
