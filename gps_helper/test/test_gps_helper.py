@@ -21,7 +21,7 @@ class TestGPSHelper(GPSTest):
 
     def test_GPSDataSource_ll2ecef(self):
         ecef_test = [-1264406.32825878, -4812253.55054197,  3980159.53945133]
-        ecef = self.gps_ds.llh2ecef(self.gps_ds.ref_lla)
+        ecef = gh.llh2ecef(self.gps_ds.ref_lla)
         npt.assert_almost_equal(ecef, ecef_test)
 
     def test_GPSDataSource_get_gps_sv(self):

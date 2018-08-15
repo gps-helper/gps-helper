@@ -51,7 +51,7 @@ class GPSDataSource(object):
         Perform coordinate conversion
         """
         # convert from llh (or lla) to earth centric fixed
-        self.ref_ecef = self.llh2ecef(self.ref_lla)
+        self.ref_ecef = llh2ecef(self.ref_lla)
 
         """
         Read GPS TLEs into dictionary
@@ -61,12 +61,11 @@ class GPSDataSource(object):
         self.GPS_sv_dict = parser(self.GPS_TLE_file)
 
         """
-        Initialize Four SGP4 satellite objects in tuple satellite 
+        Initialize SGP4 satellite objects in dict satellite 
         """
         self.satellite = []
-        for k in range(4):
-            PRN = self.Rx_sv_list[k]
-            self.satellite.append(twoline2rv(self.GPS_sv_dict[PRN][0], self.GPS_sv_dict[PRN][1], wgs84))
+        for prn in self.Rx_sv_list:
+            self.satellite.append(twoline2rv(self.GPS_sv_dict[prn][0], self.GPS_sv_dict[prn][1], wgs84))
 
         """
         Time offset relative to satellite propagation start time
@@ -109,7 +108,7 @@ class GPSDataSource(object):
         SV_Pos = np.zeros((4, 3, self.N_sim_steps))
         SV_Vel = np.zeros((4, 3, self.N_sim_steps))
         year = 2000 + yr2
-        for n in range(4):
+        for n in range(len(self.Rx_sv_list)):
             for k, tk in enumerate(self.t_delta):
                 SV_Pos[n, :, k], SV_Vel[n, :, k], gst = self.propagate_ecef(self.satellite[n], year, mon, day, hr,
                                                                             minute, tk)
@@ -321,53 +320,6 @@ class GPSDataSource(object):
         gst = temp
         return gst
 
-    def llh2ecef(self, llh):
-        """
-        Convert lat,lon,hgt geographic coords to X,Y,Z Earth Centered Earth
-        Fixed (ecef) or just (ecf) coords.
-
-        Parameters
-        ----------
-        llh : A three element ndarray containing latitude(lat), longitude (lon), and altitude (a) or height (hgt), all in meters
-
-        Returns
-        -------
-        x : The ecef x coordinate
-        y : The ecef y coordinate
-        z : The ecef z coordinate
-
-        Notes
-        -----
-        This is a private function that computes:
-        N = a/sqrt( 1 - f*(2-f)*sin(lat)*sin(lat) )
-        X = (N + h)*cos(lat)*cos(lon)
-        Y = (N + h)*cos(lat)*sin(lon)
-        Z = ((1-f)^2 * N + h)*sin(lat)
-        by also calling EarthModel()
-
-        Examples
-        --------
-
-        """
-
-        lat = llh[0] * np.pi / 180.
-        lon = llh[1] * np.pi / 180.
-        hgt = llh[2]
-
-        ecf = np.zeros(3)
-        " Set up WGS-84 constants."
-        a, f = earth_model()
-
-        " Store some commonly used values."
-        slat = np.sin(lat)
-        N = a / np.sqrt(1 - f * (2 - f) * slat ** 2)
-        Nplushgtclat = (N + hgt) * np.cos(lat)
-
-        x = Nplushgtclat * np.cos(lon)
-        y = Nplushgtclat * np.sin(lon)
-        z = ((1 - f) ** 2 * N + hgt) * slat
-
-        return np.array([x, y, z])
 
     def days2mdh(self, year, days):
         """
@@ -481,6 +433,55 @@ def earth_model():
     a = 6378137.0  # meters
     f = 1.0 / 298.257223563
     return a, f
+
+
+def llh2ecef(llh):
+    """
+    Convert lat,lon,hgt geographic coords to X,Y,Z Earth Centered Earth
+    Fixed (ecef) or just (ecf) coords.
+
+    Parameters
+    ----------
+    llh : A three element ndarray containing latitude(lat), longitude (lon), and altitude (a) or height (hgt), all in meters
+
+    Returns
+    -------
+    x : The ecef x coordinate
+    y : The ecef y coordinate
+    z : The ecef z coordinate
+
+    Notes
+    -----
+    This is a function that computes:
+    N = a/sqrt( 1 - f*(2-f)*sin(lat)*sin(lat) )
+    X = (N + h)*cos(lat)*cos(lon)
+    Y = (N + h)*cos(lat)*sin(lon)
+    Z = ((1-f)^2 * N + h)*sin(lat)
+    by also calling EarthModel()
+
+    Examples
+    --------
+
+    """
+
+    lat = llh[0] * np.pi / 180.
+    lon = llh[1] * np.pi / 180.
+    hgt = llh[2]
+
+    ecf = np.zeros(3)
+    " Set up WGS-84 constants."
+    a, f = earth_model()
+
+    " Store some commonly used values."
+    slat = np.sin(lat)
+    N = a / np.sqrt(1 - f * (2 - f) * slat ** 2)
+    Nplushgtclat = (N + hgt) * np.cos(lat)
+
+    x = Nplushgtclat * np.cos(lon)
+    y = Nplushgtclat * np.sin(lon)
+    z = ((1 - f) ** 2 * N + hgt) * slat
+
+    return np.array([x, y, z])
 
 
 def ecef2enu(r_ecef, r_ref, phi_ref, lam_ref):
