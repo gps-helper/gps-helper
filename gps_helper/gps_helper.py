@@ -102,7 +102,7 @@ class GPSDataSource(object):
 
         Parameters
         ----------
-        yr2 : year as two digit integer, e.g., 2018 <=> 18)
+        yr2 : year as two digit integer, added to year 2000 (e.g., 2018 <=> 18)
         mon : month as two digit integer
         day : day as two digits, but can include fractional values
         hr : hour as two digits, but can include fractional values
