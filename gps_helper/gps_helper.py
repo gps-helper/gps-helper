@@ -74,7 +74,6 @@ class GPSDataSource(object):
         self.t_delta = np.array([0])
         self.N_sim_steps = 0
 
-
     def create_sv_data_set(self, yr2, mon, day, hr, minute):
         """
         This method returns a numpy ndarrays containing target TDOA in seconds, FDOA in Hz,
@@ -319,7 +318,6 @@ class GPSDataSource(object):
             temp += twopi
         gst = temp
         return gst
-
 
     def days2mdh(self, year, days):
         """
