@@ -64,12 +64,8 @@ class GPSDataSource(object):
             parser = tle_parsers[tle_source]
         self.GPS_sv_dict = parser(self.GPS_TLE_file)
 
-        """
-        Initialize SGP4 satellite objects in list satellite 
-        """
         self.satellite = []
-        for prn in self.Rx_sv_list:
-            self.satellite.append(twoline2rv(self.GPS_sv_dict[prn][0], self.GPS_sv_dict[prn][1], wgs84))
+        self.init_sat_obs()
 
         """
         Time offset relative to satellite propagation start time
@@ -77,6 +73,14 @@ class GPSDataSource(object):
         self.Ts = ts
         self.t_delta = np.array([0])
         self.N_sim_steps = 0
+
+    def init_sat_obs(self):
+        """
+        Initialize SGP4 satellite objects in list satellite
+        """
+        self.satellite = []
+        for prn in self.Rx_sv_list:
+            self.satellite.append(twoline2rv(self.GPS_sv_dict[prn][0], self.GPS_sv_dict[prn][1], wgs84))
 
     def create_sv_data_set(self, yr2, mon, day, hr, minute):
         """
