@@ -3,7 +3,7 @@ import numpy as np
 from sgp4.io import twoline2rv
 from sgp4.io import jday
 from sgp4.earth_gravity import wgs84
-from . tle_parsers import get_celestrak_sv, get_spacetrack_sv
+from . tle_parsers import get_parsers
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -16,7 +16,7 @@ except ImportError:
     warnings.warn("mayavi not imported due to import error")
 
 radius = 6371669.9
-tle_parsers = {'celestrak': get_celestrak_sv, 'spacetrack': get_spacetrack_sv}
+tle_parsers = get_parsers()
 
 
 class GPSDataSource(object):

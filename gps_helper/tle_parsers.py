@@ -1,3 +1,6 @@
+import inspect
+import sys
+
 def get_celestrak_sv(tle):
     """
     Place a text file of Celestrak GPS TLEs into a dictionary with
@@ -45,3 +48,12 @@ def get_spacetrack_sv(tle):
                 UserWarning('File structure incorrect')
                 break
     return gps_sv_dict
+
+
+def get_parsers():
+    parsers = {}
+    for name, func in inspect.getmembers(sys.modules[__name__]):
+        if 'get_' in name and '_sv' in name:
+            parser_name = name.split('get_')[1].split('_sv')[0]
+            parsers[parser_name] = func
+    return parsers
