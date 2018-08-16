@@ -42,6 +42,6 @@ def get_spacetrack_sv(tle):
                 tle_ln2 = line.strip('\n')
                 gps_sv_dict.update({prn: (tle_ln1, tle_ln2)})
             else:
-                UserWarning('File structue incorrect')
+                UserWarning('File structure incorrect')
                 break
     return gps_sv_dict
