@@ -95,7 +95,6 @@ class TestGPSHelper(GPSTest):
     def test_GPSDataSource_user_traj_plot(self):
         rl1 = [('e', .2), ('n', .4), ('e', -0.1), ('n', -0.2), ('e', -0.1), ('n', -0.1)]
         user_vel = 30
-        USER_Pos_enu, USER_Pos_ecf, SV_Pos, SV_Vel = \
         user_pos_enu, user_pos_ecf, sv_pos, sv_vel = self.gps_ds.user_traj_gen(route_list=rl1,
                                   vmph=user_vel,
                                   yr2=18,  # the 2k year, so 2018 is 18
@@ -103,4 +102,4 @@ class TestGPSHelper(GPSTest):
                                   day=15,
                                   hr=8 + 7,
                                   minute=45)  # Jan 18, 2018, 8:45 AM
-        gh.sv_user_traj_3d(self.gps_ds, SV_Pos, USER_Pos_ecf, ele=20, azim=-40)
+        gh.sv_user_traj_3d(self.gps_ds, sv_pos, user_pos_ecf, ele=20, azim=-40)
