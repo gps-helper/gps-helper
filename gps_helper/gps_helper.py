@@ -82,7 +82,7 @@ class GPSDataSource(object):
         for prn in self.Rx_sv_list:
             self.satellite.append(twoline2rv(self.GPS_sv_dict[prn][0], self.GPS_sv_dict[prn][1], wgs84))
 
-    def create_sv_data_set(self, yr2, mon, day, hr, minute):
+    def create_sv_data_set(self, yr2, mon, day, hr, minute, sec=0):
         """
         This method returns a numpy ndarrays containing target TDOA in seconds, FDOA in Hz,
         and the time span in minutes
@@ -118,8 +118,9 @@ class GPSDataSource(object):
         year = 2000 + yr2
         for n in range(len(self.Rx_sv_list)):
             for k, tk in enumerate(self.t_delta):
+                curr_tk = sec + tk
                 SV_Pos[n, :, k], SV_Vel[n, :, k], gst = self.propagate_ecef(self.satellite[n], year, mon, day, hr,
-                                                                            minute, tk)
+                                                                            minute, curr_tk)
         return SV_Pos, SV_Vel
 
     def user_traj_gen(self, route_list, vmph, yr2=18, mon=1, day=14, hr=20, minute=0):
