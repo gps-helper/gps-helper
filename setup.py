@@ -3,6 +3,7 @@ import os
 import codecs
 from gps_helper import __version__
 
+
 def fpath(name):
     return os.path.join(os.path.dirname(__file__), name)
 

@@ -76,6 +76,27 @@ class TestGPSHelper(GPSTest):
         npt.assert_almost_equal(sv_pos_test, sv_pos[0, :, :2])
         npt.assert_almost_equal(sv_vel_test, sv_vel[0, :, :2])
 
+    def test_GPSDataSource_create_sv_data_set_w_sec(self):
+        sv_pos_test = [[-15182867.82889292, -15181916.01187285],
+                       [-20299128.515928,   -20298673.91726457],
+                       [  8066378.52747676,   8069314.6516809 ]]
+        sv_vel_test = [[ 951.65221447,  951.95928395],
+                       [ 454.51226928,  454.69536297],
+                       [2936.20090207, 2936.03002542]]
+        rl1 = [('e', .2), ('n', .4), ('e', -0.1), ('n', -0.2), ('e', -0.1), ('n', -0.1)]
+        vmph = 5
+        n_segs = len(rl1)
+        steps = []
+        steps_total = 0
+        for k in range(n_segs):
+            steps.append(int(np.floor((abs(rl1[k][1] / vmph * 3600)))))
+            steps_total += steps[k]
+        self.gps_ds.t_delta = np.arange(0, steps_total) * self.gps_ds.Ts
+        self.gps_ds.N_sim_steps = steps_total
+        sv_pos, sv_vel = self.gps_ds.create_sv_data_set(18, 1, 15, 8 + 7, 45, 10)
+        npt.assert_almost_equal(sv_pos_test, sv_pos[0, :, :2])
+        npt.assert_almost_equal(sv_vel_test, sv_vel[0, :, :2])
+
     def test_GPSDataSource_user_traj_gen_u_ecf(self):
         user_ecef_test = [[-1264404.16643545, -4812254.11855508,  3980159.53945133],
                      [-1264402.00461211, -4812254.68656819,  3980159.53945133],
@@ -95,7 +116,6 @@ class TestGPSHelper(GPSTest):
     def test_GPSDataSource_user_traj_plot(self):
         rl1 = [('e', .2), ('n', .4), ('e', -0.1), ('n', -0.2), ('e', -0.1), ('n', -0.1)]
         user_vel = 30
-        USER_Pos_enu, USER_Pos_ecf, SV_Pos, SV_Vel = \
         user_pos_enu, user_pos_ecf, sv_pos, sv_vel = self.gps_ds.user_traj_gen(route_list=rl1,
                                   vmph=user_vel,
                                   yr2=18,  # the 2k year, so 2018 is 18
@@ -103,4 +123,4 @@ class TestGPSHelper(GPSTest):
                                   day=15,
                                   hr=8 + 7,
                                   minute=45)  # Jan 18, 2018, 8:45 AM
-        gh.sv_user_traj_3d(self.gps_ds, SV_Pos, USER_Pos_ecf, ele=20, azim=-40)
+        gh.sv_user_traj_3d(self.gps_ds, sv_pos, user_pos_ecf, ele=20, azim=-40)
