@@ -679,7 +679,6 @@ def sv_user_traj_3d_interactive(gps_ds, sv_pos, user_pos, ele=10., azim=20.):
         x = np.cos(theta) * np.cos(angle)
         y = np.sin(theta) * np.cos(angle)
         z = np.ones_like(theta) * np.sin(angle)
-        print(x)
         mlab.plot3d(x, y, z, color=(1, 1, 1),
                     opacity=0.2, tube_radius=None)
 
