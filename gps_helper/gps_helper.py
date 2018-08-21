@@ -112,11 +112,12 @@ class GPSDataSource(object):
         --------
 
         """
+        sv_len = len(self.Rx_sv_list)
         "Fill position and velocity arrays"
-        SV_Pos = np.zeros((4, 3, self.N_sim_steps))
-        SV_Vel = np.zeros((4, 3, self.N_sim_steps))
+        SV_Pos = np.zeros((sv_len, 3, self.N_sim_steps))
+        SV_Vel = np.zeros((sv_len, 3, self.N_sim_steps))
         year = 2000 + yr2
-        for n in range(len(self.Rx_sv_list)):
+        for n in range(sv_len):
             for k, tk in enumerate(self.t_delta):
                 curr_tk = sec + tk
                 SV_Pos[n, :, k], SV_Vel[n, :, k], gst = self.propagate_ecef(self.satellite[n], year, mon, day, hr,
@@ -678,7 +679,6 @@ def sv_user_traj_3d_interactive(gps_ds, sv_pos, user_pos, ele=10., azim=20.):
         x = np.cos(theta) * np.cos(angle)
         y = np.sin(theta) * np.cos(angle)
         z = np.ones_like(theta) * np.sin(angle)
-        print(x)
         mlab.plot3d(x, y, z, color=(1, 1, 1),
                     opacity=0.2, tube_radius=None)
 
