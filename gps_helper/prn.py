@@ -21,10 +21,11 @@ class ShiftRegister:
 
     def next(self):
         """
-        Generate the next output and return it. This method includes logic for shifting the bits and binary addition.
+        Generate the next output and return it. This method includes the feedback step.
         :return: Bit
         """
         out = self.get_output()
+        self.do_feedback()
         return out
 
     def do_feedback(self):
@@ -32,6 +33,10 @@ class ShiftRegister:
         Generate the feedback, and shift the values.
         :return:
         """
+        fb = [self.G[i - 1] for i in self.poly_taps]
+        fb = sum(fb) % 2
+        self.G.pop()
+        self.G.appendleft(fb)
 
     def get_output(self):
         """
