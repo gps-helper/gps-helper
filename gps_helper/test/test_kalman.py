@@ -10,6 +10,7 @@ class TestKalman(GPSTest):
     """
     Test class for the kalman functions.
     """
+    _multiprocess_can_split_ = True
 
     def test_simple_kalman_x(self):
         """
