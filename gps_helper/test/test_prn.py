@@ -53,3 +53,15 @@ class TestPRN(GPSTest):
             prn_test = bin(int(prn_test, 8))[2:]
             for i in range(10):
                 self.assertEqual(prn_test[i], str(prn_seq.ca[i]))
+
+    def test_rotation(self):
+        """
+        Test whether the 1024-2047 bits are the same as the 0-1023 bits.
+        :return:
+        """
+        prn_seq = prn.PRN(1)
+        ca_first = prn_seq.prn_seq()
+        ca_second = []
+        for i in range(1023):
+            ca_second.append(prn_seq.next())
+        self.assertEqual(ca_first, ca_second)

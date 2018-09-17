@@ -79,4 +79,20 @@ class PRN:
             g2 = self.g2.next()
             ca = (g1 + g2) % 2
             self.ca.append(ca)
-            return ca
+            self.iteration += 1
+        else:
+            ca = self.ca[self.iteration % 1023]
+            self.iteration += 1
+            if self.iteration == 2047:
+                self.iteration = 1023
+        return ca
+
+    def prn_seq(self):
+        """
+        Return the full ca sequence. (1023 bits)
+        :return:
+        """
+        if self.iteration < 1023:
+            while self.iteration < 1023:
+                self.next()
+        return self.ca
