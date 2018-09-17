@@ -31,3 +31,25 @@ class TestPRN(GPSTest):
         sr = prn.ShiftRegister(g2_poly, prn1_poly)
         sr.next()
         self.assertEqual(g2_test, list(sr.G))
+
+    def test_PRN_init(self):
+        """
+        Just testing logic during set up
+        :return:
+        """
+        for sv in range(1, 38):
+            prn_seq = prn.PRN(sv)
+
+    def test_first_37(self):
+        """
+        Test the first ten chips of the first 37 prn's against the provided octal representation from the ICD
+        :return:
+        """
+        for sv in range(1, 38):
+            prn_seq = prn.PRN(sv)
+            for i in range(10):
+                prn_seq.next()
+            prn_test = prn.prn_info['first_ten_chips'][str(sv)]
+            prn_test = bin(int(prn_test, 8))[2:]
+            for i in range(10):
+                self.assertEqual(prn_test[i], str(prn_seq.ca[i]))

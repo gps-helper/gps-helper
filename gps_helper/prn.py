@@ -46,3 +46,37 @@ class ShiftRegister:
         out = [self.G[i - 1] for i in self.prn_taps]
         out = sum(out) % 2
         return out
+
+
+class PRN:
+
+    def __init__(self, prn):
+        """
+
+        :param prn: SV ID No. as described in the ICD 200.
+        """
+        sv_range_message = "prn must be 1-63"
+        self.prn = prn
+        if prn < 1 or prn > 63:
+            ValueError(sv_range_message)
+        self.sv_prn = prn % 37 if prn > 37 else prn
+        self.sv_taps = prn_info['taps'][str(self.sv_prn)]
+        self.g1 = ShiftRegister(prn_info['taps']['G1'], [10])
+        self.g2 = ShiftRegister(prn_info['taps']['G2'], self.sv_taps)
+        if prn > 38:
+            delays = prn_info['delays'][str(self.prn)]
+            # TODO: Apply shifts to the X2 array before starting sequence
+        self.iteration = 0
+        self.ca = []
+
+    def next(self):
+        """
+        Get the next chip in the sequence.
+        :return:
+        """
+        if self.iteration < 1023:
+            g1 = self.g1.next()
+            g2 = self.g2.next()
+            ca = (g1 + g2) % 2
+            self.ca.append(ca)
+            return ca
