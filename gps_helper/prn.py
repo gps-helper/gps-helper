@@ -59,13 +59,20 @@ class PRN:
         self.prn = prn
         if prn < 1 or prn > 63:
             ValueError(sv_range_message)
-        self.sv_prn = prn % 37 if prn > 37 else prn
+        if prn < 38:
+            self.sv_prn = prn
+        else:
+            self.sv_prn = 0
         self.sv_taps = prn_info['taps'][str(self.sv_prn)]
         self.g1 = ShiftRegister(prn_info['taps']['G1'], [10])
         self.g2 = ShiftRegister(prn_info['taps']['G2'], self.sv_taps)
-        if prn > 38:
+        if prn > 37:
             delays = prn_info['delays'][str(self.prn)]
-            # TODO: Apply shifts to the X2 array before starting sequence
+            delays = list(bin(int(delays, 8))[2:])
+            while len(delays) < 10:
+                delays.insert(0, 0)
+            for i in range(10):
+                self.g2.G[i] = int(delays[i])
         self.iteration = 0
         self.ca = []
 
