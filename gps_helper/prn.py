@@ -7,6 +7,10 @@ prn_info = json.loads(prn_json)
 
 
 class ShiftRegister:
+    """
+    This class implements a shift register as described in the ICD 200 for using two taps.
+    This is used by :class:`PRN`.
+    """
 
     def __init__(self, poly_taps, prn_taps):
         """
@@ -22,6 +26,7 @@ class ShiftRegister:
     def next(self):
         """
         Generate the next output and return it. This method includes the feedback step.
+        
         :return: Bit
         """
         out = self.get_output()
@@ -41,6 +46,7 @@ class ShiftRegister:
     def get_output(self):
         """
         Generate the next output value for the sequence.
+
         :return: Bit
         """
         out = [self.G[i - 1] for i in self.prn_taps]
@@ -49,6 +55,9 @@ class ShiftRegister:
 
 
 class PRN:
+    """
+    This class implements the coarse acquisition prn sequence as described in ICD 200.
+    """
 
     def __init__(self, prn):
         """
@@ -79,6 +88,7 @@ class PRN:
     def next(self):
         """
         Get the next chip in the sequence.
+
         :return:
         """
         if self.iteration < 1023:
@@ -97,6 +107,8 @@ class PRN:
     def prn_seq(self):
         """
         Return the full ca sequence. (1023 bits)
+        Uses :func:`PRN.next` to generate full sequence.
+
         :return:
         """
         if self.iteration < 1023:
