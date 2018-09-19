@@ -26,7 +26,7 @@ class ShiftRegister:
     def next(self):
         """
         Generate the next output and return it. This method includes the feedback step.
-        
+
         :return: Bit
         """
         out = self.get_output()
@@ -36,6 +36,7 @@ class ShiftRegister:
     def do_feedback(self):
         """
         Generate the feedback, and shift the values.
+        
         :return:
         """
         fb = [self.G[i - 1] for i in self.poly_taps]
