@@ -36,7 +36,7 @@ class ShiftRegister:
     def do_feedback(self):
         """
         Generate the feedback, and shift the values.
-        
+
         :return:
         """
         fb = [self.G[i - 1] for i in self.poly_taps]
