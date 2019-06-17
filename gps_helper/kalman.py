@@ -27,6 +27,7 @@ class SimpleKalman(object):
         self.K = None
         # Error covariance initialize
         self.P = P * np.eye(1)
+        self.volt = None
 
     def next_sample(self, z):
         """
@@ -39,7 +40,7 @@ class SimpleKalman(object):
 
         self.K = Pp @ self.H.T * inv(self.H @ Pp @ self.H.T + self.R)
 
-        self.x = xp + self.K @ (np.array([[z]] - self.H @ xp))
+        self.x = xp + self.K @ (np.array(np.array([[z]]) - self.H @ xp))
         self.P = Pp - self.K @ self.H @ Pp
 
         self.volt = self.x[0]
