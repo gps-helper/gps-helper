@@ -539,28 +539,20 @@ def enu2ecef(r_enu, r_ref, phi_ref, lam_ref):
 
 
 def sv_user_traj_3d(gps_ds, sv_pos, user_pos, ele=10, azim=20):
-    """[summary]
+    """
 
-    Parameters:
-    ----------
-    GPS_ds : {[type]}
-        [description]
-    SV_Pos : {[type]}
-        [description]
-    USER_Pos : {[type]}
-        [description]
-    ele : {[type]}, optional
-        [description] (the default is 20, which [default_description])
-    azim : {[type]}, optional
-        [description] (the default is 20, which [default_description])
-
+    :param gps_ds:
+    :param sv_pos: Satellite position locations in ECEF
+    :param user_pos: User position locations in ECEF
+    :param ele: Elevation for the camera/view angle (the default is 20)
+    :param azim: Azimuth for the camera/view angle (the default is 20)
+    :return:
     """
 
     # Mark Wickert January 2018
 
     fig = plt.figure(figsize=(7, 7))
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_aspect('equal')
     u = np.linspace(0, 2 * np.pi, 100)
     v = np.linspace(0, np.pi, 100)
     x = radius * np.outer(np.cos(u), np.sin(v))
