@@ -4,3 +4,5 @@
 .idea/*
 docs/build/*
 *.ipynb_checkpoints
+.eggs/*
+.coverage

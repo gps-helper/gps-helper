@@ -609,8 +609,8 @@ def sv_user_traj_3d_interactive(gps_ds, sv_pos, user_pos, ele=10., azim=20.):
     This method will provide an interactive 3d model plotted using mayavi to show all trajectories.
 
     :param gps_ds:
-    :param sv_pos:
-    :param user_pos:
+    :param sv_pos: Satellite position locations in ECEF
+    :param user_pos: User position locations in ECEF
     :return:
     """
     mlab.figure(1, bgcolor=(0.48, 0.48, 0.48), fgcolor=(0, 0, 0),
