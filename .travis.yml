@@ -5,10 +5,8 @@ python:
     - "3.6"
     - "3.7-dev"
 install: pip install tox-travis coverage
-before_script: # configure a headless display to test plot generation
-- "export DISPLAY=:99.0"
-- "sh -e /etc/init.d/xvfb start"
-- sleep 3 # give xvfb some time to start
+services:
+ - xvfb
 script:
 - tox
 after_success:
