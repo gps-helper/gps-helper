@@ -3,6 +3,7 @@
 *.egg-info/*
 .idea/*
 docs/build/*
+docs/source/readme.md
 *.ipynb_checkpoints
 .eggs/*
 .coverage

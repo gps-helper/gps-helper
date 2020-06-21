@@ -13,19 +13,22 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
-import os
+from logging import getLogger
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
+import os
+import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0, os.path.abspath('../..'))
-
+log = getLogger(__name__)
+try:
+    os.symlink('../../README.md', 'readme.md')
+except FileExistsError as fee:
+    log.debug(fee)
 
 # -- General configuration ------------------------------------------------
 
@@ -40,11 +43,11 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
+              'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
               'nbsphinx',
-              'numpydoc',
-              'm2r']
+              'recommonmark']
 
 exclude_patterns = ['_build', '*.ipynb_checkpoints']
 
@@ -54,15 +57,14 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
 project = 'gps-helper'
-copyright = '2018, Chiranth Siddappa, Mark Wickert'
+copyright = '2020, Chiranth Siddappa, Mark Wickert'
 author = 'Chiranth Siddappa, Mark Wickert'
 
 # The version info for the project you're documenting, acts as replacement for

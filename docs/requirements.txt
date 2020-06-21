@@ -1,7 +1,6 @@
 sphinx
-numpydoc
 nbsphinx
 ipykernel
 matplotlib>=2.2
-m2r
+recommonmark
 scipy
