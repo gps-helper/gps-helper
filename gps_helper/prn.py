@@ -2,8 +2,9 @@ import json
 import os
 from collections import deque
 
-prn_json = open(os.path.join(os.path.dirname(__file__), 'prn_info.json')).read()
-prn_info = json.loads(prn_json)
+with open(os.path.join(os.path.dirname(__file__), 'prn_info.json')) as pij:
+    prn_json = pij.read()
+    prn_info = json.loads(prn_json)
 
 
 class ShiftRegister:
